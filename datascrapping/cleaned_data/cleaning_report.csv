@@ -1,0 +1,8 @@
+filename,original_rows,price_converted,surface_converted,failed_price,failed_surface
+bizerte_properties.csv,140,140,140,0,0
+grand_tunis_properties.csv,95,0,95,95,0
+kairouan_properties.csv,295,295,295,0,0
+mahdia_properties.csv,291,291,291,0,0
+monastir_properties.csv,299,282,299,17,0
+sfax_properties.csv,160,160,160,0,0
+sousse_properties.csv,295,291,295,4,0
