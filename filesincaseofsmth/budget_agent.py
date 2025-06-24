@@ -208,153 +208,151 @@ class EnhancedBudgetAgent:
             )
             texts.append(text)
         return texts
-    
-    def visualize_embeddings(self, method: str = 'pca', client_query: Optional[str] = None) -> go.Figure:
-        """
-        Visualize property embeddings using dimensionality reduction
-        
-        Args:
-            method: 'pca', 'tsne', or 'both'
-            client_query: Optional client query to highlight relevant properties
-            
-        Returns:
-            Plotly figure with embedding visualization
-        """
-        if self.embedding_matrix is None:
-            raise ValueError("No embeddings available. Please load data first.")
-        
-        # Prepare data for visualization
-        cities = [meta['City'] for meta in self.property_metadata]
-        prices = [meta['Price'] for meta in self.property_metadata]
-        surfaces = [meta['Surface'] for meta in self.property_metadata]
-        types = [meta.get('Type', 'Unknown') for meta in self.property_metadata]
-        
-        if method in ['pca', 'both']:
-            # PCA reduction
-            pca = PCA(n_components=2, random_state=42)
-            pca_coords = pca.fit_transform(self.embedding_matrix)
-            
-            fig_pca = px.scatter(
-                x=pca_coords[:, 0], 
-                y=pca_coords[:, 1],
-                color=cities,
-                size=surfaces,
-                hover_data={
-                    'Price': prices,
-                    'Surface': surfaces,
-                    'Type': types
-                },
-                title='Property Embeddings Visualization (PCA)',
-                labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.1%} variance)',
-                       'y': f'PC2 ({pca.explained_variance_ratio_[1]:.1%} variance)'}
-            )
-        
-        if method in ['tsne', 'both']:
-            # t-SNE reduction
-            tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, len(self.embedding_matrix)-1))
-            tsne_coords = tsne.fit_transform(self.embedding_matrix)
-            
-            fig_tsne = px.scatter(
-                x=tsne_coords[:, 0], 
-                y=tsne_coords[:, 1],
-                color=cities,
-                size=surfaces,
-                hover_data={
-                    'Price': prices,
-                    'Surface': surfaces,
-                    'Type': types
-                },
-                title='Property Embeddings Visualization (t-SNE)',
-                labels={'x': 't-SNE 1', 'y': 't-SNE 2'}
-            )
-        
-        # Highlight client query if provided
-        if client_query:
-            query_embedding = np.array([self.embeddings.embed_query(client_query)])
-            
-            if method == 'pca':
-                query_pca = pca.transform(query_embedding)
-                fig_pca.add_trace(go.Scatter(
-                    x=query_pca[:, 0], y=query_pca[:, 1],
-                    mode='markers',
-                    marker=dict(color='red', size=15, symbol='star'),
-                    name='Client Query'
-                ))
-                return fig_pca
-            elif method == 'tsne':
-                # For t-SNE, we can't directly transform new points
-                return fig_tsne
-        
-        if method == 'both':
-            # Create subplot
-            fig = make_subplots(
-                rows=1, cols=2,
-                subplot_titles=['PCA Visualization', 't-SNE Visualization']
-            )
-            
-            # Add PCA plot
-            for trace in fig_pca.data:
-                fig.add_trace(trace, row=1, col=1)
-            
-            # Add t-SNE plot  
-            for trace in fig_tsne.data:
-                fig.add_trace(trace, row=1, col=2)
-            
-            fig.update_layout(title='Property Embeddings: PCA vs t-SNE')
-            return fig
-        
-        return fig_pca if method == 'pca' else fig_tsne
-    
-    def cluster_properties(self, n_clusters: int = 5) -> Dict[str, Any]:
-        """
-        Cluster properties based on their embeddings
-        
-        Args:
-            n_clusters: Number of clusters to create
-            
-        Returns:
-            Dictionary with clustering results and analysis
-        """
-        if self.embedding_matrix is None:
-            raise ValueError("No embeddings available.")
-        
-        # Perform K-means clustering
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-        cluster_labels = kmeans.fit_predict(self.embedding_matrix)
-        
-        # Analyze clusters
-        cluster_analysis = {}
-        for i in range(n_clusters):
-            cluster_mask = cluster_labels == i
-            cluster_properties = [self.property_metadata[j] for j, mask in enumerate(cluster_mask) if mask]
-            
-            if cluster_properties:
-                cluster_analysis[f'Cluster {i}'] = {
-                    'count': len(cluster_properties),
-                    'avg_price': np.mean([p['Price'] for p in cluster_properties]),
-                    'avg_surface': np.mean([p['Surface'] for p in cluster_properties]),
-                    'cities': list(set([p['City'] for p in cluster_properties])),
-                    'types': list(set([p.get('Type', 'Unknown') for p in cluster_properties]))
-                }
-        
-        # Create visualization
-        pca = PCA(n_components=2, random_state=42)
-        pca_coords = pca.fit_transform(self.embedding_matrix)
-        
-        fig = px.scatter(
-            x=pca_coords[:, 0], 
-            y=pca_coords[:, 1],
-            color=[f'Cluster {label}' for label in cluster_labels],
-            title=f'Property Clusters (K-means, k={n_clusters})',
-            labels={'x': 'PC1', 'y': 'PC2'}
-        )
-        
-        return {
-            'cluster_labels': cluster_labels,
-            'cluster_analysis': cluster_analysis,
-            'visualization': fig,
-            'cluster_centers': kmeans.cluster_centers_
-        }
+      # def visualize_embeddings(self, method: str = 'pca', client_query: Optional[str] = None) -> go.Figure:
+    #     """
+    #     Visualize property embeddings using dimensionality reduction
+    #     
+    #     Args:
+    #         method: 'pca', 'tsne', or 'both'
+    #         client_query: Optional client query to highlight relevant properties
+    #         
+    #     Returns:
+    #         Plotly figure with embedding visualization
+    #     """
+    #     if self.embedding_matrix is None:
+    #         raise ValueError("No embeddings available. Please load data first.")
+    #     
+    #     # Prepare data for visualization
+    #     cities = [meta['City'] for meta in self.property_metadata]
+    #     prices = [meta['Price'] for meta in self.property_metadata]
+    #     surfaces = [meta['Surface'] for meta in self.property_metadata]
+    #     types = [meta.get('Type', 'Unknown') for meta in self.property_metadata]
+    #     
+    #     if method in ['pca', 'both']:
+    #         # PCA reduction
+    #         pca = PCA(n_components=2, random_state=42)
+    #         pca_coords = pca.fit_transform(self.embedding_matrix)
+    #         
+    #         fig_pca = px.scatter(
+    #             x=pca_coords[:, 0], 
+    #             y=pca_coords[:, 1],
+    #             color=cities,
+    #             size=surfaces,
+    #             hover_data={
+    #                 'Price': prices,
+    #                 'Surface': surfaces,
+    #                 'Type': types
+    #             },
+    #             title='Property Embeddings Visualization (PCA)',
+    #             labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.1%} variance)',
+    #                    'y': f'PC2 ({pca.explained_variance_ratio_[1]:.1%} variance)'}
+    #         )
+    #     
+    #     if method in ['tsne', 'both']:
+    #         # t-SNE reduction
+    #         tsne = TSNE(n_components=2, random_state=42, perplexity=min(30, len(self.embedding_matrix)-1))
+    #         tsne_coords = tsne.fit_transform(self.embedding_matrix)
+    #         
+    #         fig_tsne = px.scatter(
+    #             x=tsne_coords[:, 0], 
+    #             y=tsne_coords[:, 1],
+    #             color=cities,
+    #             size=surfaces,
+    #             hover_data={
+    #                 'Price': prices,
+    #                 'Surface': surfaces,
+    #                 'Type': types
+    #             },
+    #             title='Property Embeddings Visualization (t-SNE)',
+    #             labels={'x': 't-SNE 1', 'y': 't-SNE 2'}
+    #         )
+    #     
+    #     # Highlight client query if provided
+    #     if client_query:
+    #         query_embedding = np.array([self.embeddings.embed_query(client_query)])
+    #         
+    #         if method == 'pca':
+    #             query_pca = pca.transform(query_embedding)
+    #             fig_pca.add_trace(go.Scatter(
+    #                 x=query_pca[:, 0], y=query_pca[:, 1],
+    #                 mode='markers',
+    #                 marker=dict(color='red', size=15, symbol='star'),
+    #                 name='Client Query'
+    #             ))
+    #             return fig_pca
+    #         elif method == 'tsne':
+    #             # For t-SNE, we can't directly transform new points
+    #             return fig_tsne
+    #     
+    #     if method == 'both':
+    #         # Create subplot
+    #         fig = make_subplots(
+    #             rows=1, cols=2,
+    #             subplot_titles=['PCA Visualization', 't-SNE Visualization']
+    #         )
+    #         
+    #         # Add PCA plot
+    #         for trace in fig_pca.data:
+    #             fig.add_trace(trace, row=1, col=1)
+    #         
+    #         # Add t-SNE plot  
+    #         for trace in fig_tsne.data:
+    #             fig.add_trace(trace, row=1, col=2)
+    #         
+    #         fig.update_layout(title='Property Embeddings: PCA vs t-SNE')
+    #         return fig
+    #     
+    #     return fig_pca if method == 'pca' else fig_tsne
+      # def cluster_properties(self, n_clusters: int = 5) -> Dict[str, Any]:
+    #     """
+    #     Cluster properties based on their embeddings
+    #     
+    #     Args:
+    #         n_clusters: Number of clusters to create
+    #         
+    #     Returns:
+    #         Dictionary with clustering results and analysis
+    #     """
+    #     if self.embedding_matrix is None:
+    #         raise ValueError("No embeddings available.")
+    #     
+    #     # Perform K-means clustering
+    #     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    #     cluster_labels = kmeans.fit_predict(self.embedding_matrix)
+    #     
+    #     # Analyze clusters
+    #     cluster_analysis = {}
+    #     for i in range(n_clusters):
+    #         cluster_mask = cluster_labels == i
+    #         cluster_properties = [self.property_metadata[j] for j, mask in enumerate(cluster_mask) if mask]
+    #         
+    #         if cluster_properties:
+    #             cluster_analysis[f'Cluster {i}'] = {
+    #                 'count': len(cluster_properties),
+    #                 'avg_price': np.mean([p['Price'] for p in cluster_properties]),
+    #                 'avg_surface': np.mean([p['Surface'] for p in cluster_properties]),
+    #                 'cities': list(set([p['City'] for p in cluster_properties])),
+    #                 'types': list(set([p.get('Type', 'Unknown') for p in cluster_properties]))
+    #             }
+    #     
+    #     # Create visualization
+    #     pca = PCA(n_components=2, random_state=42)
+    #     pca_coords = pca.fit_transform(self.embedding_matrix)
+    #     
+    #     fig = px.scatter(
+    #         x=pca_coords[:, 0], 
+    #         y=pca_coords[:, 1],
+    #         color=[f'Cluster {label}' for label in cluster_labels],
+    #         title=f'Property Clusters (K-means, k={n_clusters})',
+    #         labels={'x': 'PC1', 'y': 'PC2'}
+    #     )
+    #     
+    #     return {
+    #         'cluster_labels': cluster_labels,
+    #         'cluster_analysis': cluster_analysis,
+    #         'visualization': fig,
+    #         'cluster_centers': kmeans.cluster_centers_
+    #     }
     
     def analyze_client_budget(self, client_info: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -385,11 +383,11 @@ class EnhancedBudgetAgent:
         
         # 4. Generate AI-powered budget analysis
         budget_analysis = self._generate_enhanced_budget_analysis(
-            client_info, market_stats, comparable_props
-        )
+            client_info, market_stats, comparable_props        )
         
-        # 5. Create budget visualization
-        budget_viz = self._create_budget_visualization(client_info, comparable_props)
+        # 5. Create budget visualization (commented out)
+        # budget_viz = self._create_budget_visualization(client_info, comparable_props)
+        budget_viz = None  # Disabled for now
         
         return {
             'client_info': client_info,
@@ -399,54 +397,136 @@ class EnhancedBudgetAgent:
             'budget_visualization': budget_viz,
             'total_properties_analyzed': len(similar_props)
         }
-    
     def _find_similar_properties_with_embeddings(self, client_info: Dict[str, Any]) -> List[Dict]:
-        """Use embedding similarity to find relevant properties"""
+        """Use embedding similarity to find relevant properties with deduplication"""
         # Create query from client info
         query_parts = []
         if client_info.get('city'):
-            query_parts.append(f"Property in {client_info['city']}")
+            query_parts.append(f"{client_info['city']}")
         if client_info.get('preferences'):
             query_parts.append(client_info['preferences'])
         if client_info.get('property_type'):
             query_parts.append(client_info['property_type'])
         
-        query = " ".join(query_parts)
+        query = " ".join(query_parts) if query_parts else "property"
+        print(f"🔍 Embedding search query: '{query}'")
         
         # Get similar documents
-        similar_docs = self.vectorstore.similarity_search(
-            query=query,
-            k=min(50, len(self.property_metadata))  # Adjust based on available data
-        )
+        k_value = min(100, len(self.property_metadata))
+        similar_docs = self.vectorstore.similarity_search(query=query, k=k_value)
         
-        return [doc.metadata for doc in similar_docs]
+        print(f"📊 Found {len(similar_docs)} similar properties via embeddings")
+        
+        # Debug: Show sample of found properties to check for duplicates
+        print("🔍 Sample of embedding search results:")
+        for i, doc in enumerate(similar_docs[:3]):
+            prop = doc.metadata
+            print(f"   {i+1}. Price: {prop.get('Price', 0):,.0f} DT, Surface: {prop.get('Surface', 0):.0f}m², Type: {prop.get('Type', 'N/A')}")
+        
+        # Deduplicate properties using a unique key
+        unique_properties = {}
+        for doc in similar_docs:
+            prop = doc.metadata
+            # Create unique key based on key attributes
+            unique_key = (prop.get('Price'), prop.get('Surface'), prop.get('City'), prop.get('Type'))
+            if unique_key not in unique_properties:
+                unique_properties[unique_key] = prop
+        
+        print(f"📊 After deduplication: {len(unique_properties)} unique properties from embeddings")
+        
+        # If we have a city filter, add more properties from that city
+        if client_info.get('city'):
+            city_properties = [p for p in self.property_metadata 
+                             if p.get('City', '').lower() == client_info['city'].lower()]
+            print(f"🏙️ Direct city search found {len(city_properties)} properties in {client_info['city']}")
+            
+            # Add unique city properties
+            existing_keys = set(unique_properties.keys())
+            added_count = 0
+            for prop in city_properties:
+                prop_key = (prop.get('Price'), prop.get('Surface'), prop.get('City'), prop.get('Type'))
+                if prop_key not in existing_keys:
+                    unique_properties[prop_key] = prop
+                    added_count += 1
+            
+            print(f"🔄 Added {added_count} additional unique properties from city search")
+        
+        deduplicated_props = list(unique_properties.values())
+        print(f"📊 Final deduplicated properties: {len(deduplicated_props)}")
+        
+        # Show price distribution to verify variety
+        if deduplicated_props:
+            prices = [p.get('Price', 0) for p in deduplicated_props]
+            print(f"💰 Price range: {min(prices):,.0f} - {max(prices):,.0f} DT")
+            unique_prices = set(prices)
+            print(f"💰 Number of unique prices: {len(unique_prices)}")
+            if len(unique_prices) < 10:
+                sample_prices = sorted(list(unique_prices))[:10]
+                print(f"⚠️  Warning: Limited price variety. Sample prices: {sample_prices}")
+        
+        return deduplicated_props
+
+    # ...existing code...
     
     def _filter_comparable_properties(self, client_info: Dict[str, Any], properties: List[Dict]) -> List[Dict]:
         """Apply client filters to properties"""
         filtered = []
         
+        print(f"🔧 Filtering {len(properties)} properties with criteria:")
+        print(f"   - City: {client_info.get('city', 'Any')}")
+        print(f"   - Min Size: {client_info.get('min_size', 'Any')} m²")
+        print(f"   - Max Price: {client_info.get('max_price', 'Any')} DT")
+        print(f"   - Property Type: {client_info.get('property_type', 'Any')}")
+        
+        city_matches = 0
+        size_matches = 0
+        price_matches = 0
+        type_matches = 0
+        
         for prop in properties:
-            # City filter (case insensitive)
+            include_property = True
+            
+            # City filter (case insensitive) - make it more flexible
             if client_info.get('city'):
-                if prop.get('City', '').lower() != client_info['city'].lower():
-                    continue
+                client_city = client_info['city'].lower().strip()
+                prop_city = prop.get('City', '').lower().strip()
+                if client_city not in prop_city and prop_city not in client_city:
+                    include_property = False
+                else:
+                    city_matches += 1
             
-            # Size filter
-            if client_info.get('min_size'):
+            # Size filter - only apply if min_size is specified and > 0
+            if client_info.get('min_size') and client_info.get('min_size') > 0:
                 if prop.get('Surface', 0) < client_info['min_size']:
-                    continue
+                    include_property = False
+                else:
+                    size_matches += 1
             
-            # Price filter
-            if client_info.get('max_price'):
+            # Price filter - only apply if max_price is specified and > 0
+            if client_info.get('max_price') and client_info.get('max_price') > 0:
                 if prop.get('Price', 0) > client_info['max_price']:
-                    continue
+                    include_property = False
+                else:
+                    price_matches += 1
             
-            # Property type filter
+            # Property type filter - make it more flexible
             if client_info.get('property_type'):
-                if prop.get('Type', '').lower() != client_info['property_type'].lower():
-                    continue
+                client_type = client_info['property_type'].lower().strip()
+                prop_type = prop.get('Type', '').lower().strip()
+                if client_type not in prop_type and prop_type not in client_type:
+                    include_property = False
+                else:
+                    type_matches += 1
             
-            filtered.append(prop)
+            if include_property:
+                filtered.append(prop)
+        
+        print(f"📋 Filter results:")
+        print(f"   - City matches: {city_matches}")
+        print(f"   - Size matches: {size_matches}")
+        print(f"   - Price matches: {price_matches}")
+        print(f"   - Type matches: {type_matches}")
+        print(f"   - Final filtered properties: {len(filtered)}")
         
         return filtered
     
@@ -601,71 +681,70 @@ class EnhancedBudgetAgent:
         analysis["confidence_score"] = confidence
         
         return analysis
-    
-    def _create_budget_visualization(self, client_info: Dict[str, Any], properties: List[Dict]) -> go.Figure:
-        """Create budget analysis visualization"""
-        if not properties:
-            return None
-        
-        prices = [p['Price'] for p in properties]
-        surfaces = [p['Surface'] for p in properties]
-        client_budget = client_info.get('budget', 0)
-          # Create subplot figure
-        fig = make_subplots(
-            rows=2, cols=2,
-            subplot_titles=[
-                'Price Distribution vs Your Budget',
-                'Price vs Surface Area', 
-                'Properties Within Budget',
-                'Price per m² Analysis'
-            ],
-            specs=[[{"secondary_y": False}, {"secondary_y": False}],
-                   [{"type": "pie"}, {"secondary_y": False}]]
-        )
-        
-        # 1. Price histogram with budget line
-        fig.add_trace(
-            go.Histogram(x=prices, name='Price Distribution', opacity=0.7),
-            row=1, col=1
-        )
-        fig.add_vline(x=client_budget, line_dash="dash", line_color="red", 
-                     annotation_text=f"Your Budget: {client_budget:,.0f} DT",
-                     row=1, col=1)
-        
-        # 2. Price vs Surface scatter
-        colors = ['green' if p <= client_budget else 'red' for p in prices]
-        fig.add_trace(
-            go.Scatter(x=surfaces, y=prices, mode='markers',
-                      marker=dict(color=colors), name='Properties'),
-            row=1, col=2
-        )
-        fig.add_hline(y=client_budget, line_dash="dash", line_color="red",
-                     row=1, col=2)
-        
-        # 3. Affordable vs Not Affordable pie chart
-        affordable = sum(1 for p in prices if p <= client_budget)
-        not_affordable = len(prices) - affordable
-        fig.add_trace(
-            go.Pie(labels=['Within Budget', 'Over Budget'], 
-                   values=[affordable, not_affordable],
-                   name="Budget Feasibility"),
-            row=2, col=1
-        )
-        
-        # 4. Price per m² box plot
-        price_per_m2 = [p/s for p, s in zip(prices, surfaces)]
-        fig.add_trace(
-            go.Box(y=price_per_m2, name='Price/m²'),
-            row=2, col=2
-        )
-        
-        fig.update_layout(
-            title=f"Budget Analysis for {client_info.get('city', 'Unknown')}",
-            height=800,
-            showlegend=False
-        )
-        
-        return fig
+      # def _create_budget_visualization(self, client_info: Dict[str, Any], properties: List[Dict]) -> go.Figure:
+    #     """Create budget analysis visualization"""
+    #     if not properties:
+    #         return None
+    #     
+    #     prices = [p['Price'] for p in properties]
+    #     surfaces = [p['Surface'] for p in properties]
+    #     client_budget = client_info.get('budget', 0)
+    #       # Create subplot figure
+    #     fig = make_subplots(
+    #         rows=2, cols=2,
+    #         subplot_titles=[
+    #             'Price Distribution vs Your Budget',
+    #             'Price vs Surface Area', 
+    #             'Properties Within Budget',
+    #             'Price per m² Analysis'
+    #         ],
+    #         specs=[[{"secondary_y": False}, {"secondary_y": False}],
+    #                [{"type": "pie"}, {"secondary_y": False}]]
+    #     )
+    #     
+    #     # 1. Price histogram with budget line
+    #     fig.add_trace(
+    #         go.Histogram(x=prices, name='Price Distribution', opacity=0.7),
+    #         row=1, col=1
+    #     )
+    #     fig.add_vline(x=client_budget, line_dash="dash", line_color="red", 
+    #                  annotation_text=f"Your Budget: {client_budget:,.0f} DT",
+    #                  row=1, col=1)
+    #     
+    #     # 2. Price vs Surface scatter
+    #     colors = ['green' if p <= client_budget else 'red' for p in prices]
+    #     fig.add_trace(
+    #         go.Scatter(x=surfaces, y=prices, mode='markers',
+    #                   marker=dict(color=colors), name='Properties'),
+    #         row=1, col=2
+    #     )
+    #     fig.add_hline(y=client_budget, line_dash="dash", line_color="red",
+    #                  row=1, col=2)
+    #     
+    #     # 3. Affordable vs Not Affordable pie chart
+    #     affordable = sum(1 for p in prices if p <= client_budget)
+    #     not_affordable = len(prices) - affordable
+    #     fig.add_trace(
+    #         go.Pie(labels=['Within Budget', 'Over Budget'], 
+    #                values=[affordable, not_affordable],
+    #                name="Budget Feasibility"),
+    #         row=2, col=1
+    #     )
+    #     
+    #     # 4. Price per m² box plot
+    #     price_per_m2 = [p/s for p, s in zip(prices, surfaces)]
+    #     fig.add_trace(
+    #         go.Box(y=price_per_m2, name='Price/m²'),
+    #         row=2, col=2
+    #     )
+    #     
+    #     fig.update_layout(
+    #         title=f"Budget Analysis for {client_info.get('city', 'Unknown')}",
+    #         height=800,
+    #         showlegend=False
+    #     )
+    #     
+    #     return fig
     
     def generate_market_report(self, city: str = None) -> Dict[str, Any]:
         """Generate comprehensive market report"""
@@ -693,13 +772,13 @@ class EnhancedBudgetAgent:
                 'min_price': min(city_prices),
                 'max_price': max(city_prices)
             }
-        
-        # Create market overview visualization
-        fig = px.box(
-            x=cities, y=prices,
-            title="Price Distribution by City",
-            labels={'x': 'City', 'y': 'Price (DT)'}
-        )
+          # Create market overview visualization (commented out)
+        # fig = px.box(
+        #     x=cities, y=prices,
+        #     title="Price Distribution by City",
+        #     labels={'x': 'City', 'y': 'Price (DT)'}
+        # )
+        fig = None  # Disabled for now
         
         return {
             'total_properties': len(properties),
@@ -964,13 +1043,12 @@ if __name__ == "__main__":
     print("\n📊 Testing Traditional Analysis...")
     client_profile = {
         "city": "Sousse",
-        "budget": 400000,
+        "budget": 60000,
         "preferences": "terrain habitation construction",
         "min_size": 200,
-        "max_price": 600000
+        "max_price": 60000
     }
-    
-    # Traditional budget analysis
+      # Traditional budget analysis
     budget_analysis = agent.analyze_client_budget(client_profile)
     
     print(f"\n=== TRADITIONAL BUDGET ANALYSIS ===")
@@ -993,19 +1071,21 @@ if __name__ == "__main__":
         
         print(f"\n📊 Confidence Score: {analysis.get('confidence_score', 0):.1%}")
         
-        # Save visualizations
-        print("\n📊 Generating Visualizations...")
-        embedding_viz = agent.visualize_embeddings(method='pca', client_query="villa Tunis")
-        embedding_viz.write_html("property_embeddings_visualization.html")
-        print("✅ Embedding visualization saved to 'property_embeddings_visualization.html'")
+        # Save visualizations (commented out)
+        # print("\n📊 Generating Visualizations...")
+        # embedding_viz = agent.visualize_embeddings(method='pca', client_query="villa Tunis")
+        # embedding_viz.write_html("property_embeddings_visualization.html")
+        # print("✅ Embedding visualization saved to 'property_embeddings_visualization.html'")
         
-        clusters = agent.cluster_properties(n_clusters=4)
-        clusters['visualization'].write_html("property_clusters_visualization.html")
-        print("✅ Clustering visualization saved to 'property_clusters_visualization.html'")
+        # clusters = agent.cluster_properties(n_clusters=4)
+        # clusters['visualization'].write_html("property_clusters_visualization.html")
+        # print("✅ Clustering visualization saved to 'property_clusters_visualization.html'")
         
-        if budget_analysis.get('budget_visualization'):
-            budget_analysis['budget_visualization'].write_html("budget_analysis_visualization.html")
-            print("✅ Budget analysis visualization saved to 'budget_analysis_visualization.html'")
+        # if budget_analysis.get('budget_visualization'):
+        #     budget_analysis['budget_visualization'].write_html("budget_analysis_visualization.html")
+        #     print("✅ Budget analysis visualization saved to 'budget_analysis_visualization.html'")
+        
+        print("\n📊 Visualizations disabled for now")
     
     else:
         print("❌ No comparable properties found for analysis")

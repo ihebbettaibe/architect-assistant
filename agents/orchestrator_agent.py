@@ -6,11 +6,11 @@ from groq import Groq
 from dotenv import load_dotenv
 
 # Import specialized agents
-from agents.budget_agent import EnhancedBudgetAgent
-# from agents.style_agent import StyleAgent
-# from agents.Project_agent import ProjectAgent
-# from agents.Regulation_agent import RegulationAgent
-# from agents.context_agent import ContextAgent
+from budget import FullBudgetAgent
+# from style_agent import StyleAgent
+# from Project_agent import ProjectAgent
+# from Regulation_agent import RegulationAgent
+# from context_agent import ContextAgent
 
 load_dotenv()
 
@@ -34,10 +34,9 @@ class ArchitectureAssistantOrchestrator:
             "regulatory_context": {},
             "current_phase": "initial_contact"
         }
-        
-        # Initialize specialized agents
+          # Initialize specialized agents
         self.agents = {
-            "budget": EnhancedBudgetAgent(),
+            "budget": FullBudgetAgent(data_folder="cleaned_data"),
             "style": None,  # StyleAgent(),
             "project": None,  # ProjectAgent(),
             "regulation": None,  # RegulationAgent(),
@@ -379,11 +378,14 @@ if __name__ == "__main__":
         
         response = orchestrator.process_client_message(message)
         
-        print(f"🤖 Assistant: {response['orchestrated_response']}")
-        print(f"📊 Phase: {response['current_phase']} → {response['next_phase']}")
-        print(f"📈 Completeness: {response['conversation_completeness']['overall']:.1%}")
-        
-        if response['architectural_brief']:
-            print("\n📋 ARCHITECTURAL BRIEF GENERATED!")
-            brief = response['architectural_brief']
-            print(f"Project: {brief['project_summary']}")
+        if response and 'orchestrator_response' in response:
+            print(f"🤖 Assistant: {response['orchestrator_response']}")
+            print(f"📊 Phase: {response.get('current_phase', 'unknown')} → {response.get('next_phase', 'unknown')}")
+            print(f"📈 Completeness: {response.get('conversation_completeness', {}).get('overall', 0):.1%}")
+            
+            if response.get('architectural_brief'):
+                print("\n📋 ARCHITECTURAL BRIEF GENERATED!")
+                brief = response['architectural_brief']
+                print(f"Project: {brief['project_summary']}")
+        else:
+            print("❌ Error: No valid response received")
