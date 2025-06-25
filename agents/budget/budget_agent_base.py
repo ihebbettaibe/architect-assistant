@@ -19,6 +19,9 @@ import json
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import CouchDB provider
+from couchdb_provider import CouchDBProvider
+
 # Load environment variables
 load_dotenv()
 
@@ -31,12 +34,13 @@ class EnhancedBudgetAgent:
     
     Outputs: Budget range + reliability score in structured JSON format
     """
-    def __init__(self, data_folder: str = "cleaned_data"):
+    def __init__(self, data_folder: str = None, use_couchdb: bool = True):
         """
         Initialize the Enhanced Budget Agent with property data and embedding visualization
         
         Args:
-            data_folder: Path to folder containing cleaned CSV files
+            data_folder: Path to folder containing cleaned CSV files (legacy support)
+            use_couchdb: Whether to use CouchDB as data source (default: True)
         """
         self.agent_name = "Agent Budget"
         self.agent_role = "Budget Estimation and Validation Specialist"
@@ -46,9 +50,47 @@ class EnhancedBudgetAgent:
         self.property_data = None
         self.embedding_matrix = None
         self.property_metadata = None
+        self.use_couchdb = use_couchdb
+        self.couchdb_provider = None
         
         # Load and index data
-        self._load_and_index_data(data_folder)
+        if use_couchdb:
+            self._load_and_index_data_from_couchdb()
+        else:
+            self._load_and_index_data(data_folder or "cleaned_data")
+    
+    def _load_and_index_data_from_couchdb(self) -> None:
+        """
+        Load and preprocess property data from CouchDB into ChromaDB with embedding storage
+        """
+        try:
+            # Initialize CouchDB provider
+            self.couchdb_provider = CouchDBProvider()
+            
+            # Get all properties from CouchDB
+            print("📊 Loading properties from CouchDB...")
+            properties = self.couchdb_provider.get_all_properties(limit=5000)
+            
+            if not properties:
+                raise ValueError("No properties found in CouchDB database.")
+            
+            # Convert to DataFrame
+            self.property_data = self.couchdb_provider.convert_to_dataframe(properties)
+            
+            if self.property_data.empty:
+                raise ValueError("No valid property data after conversion and cleaning.")
+            
+            print(f"✅ Loaded {len(self.property_data)} properties from CouchDB")
+            
+            # Create vectorstore
+            self._create_vectorstore()
+            
+        except Exception as e:
+            print(f"❌ Error loading data from CouchDB: {e}")
+            print("🔄 Falling back to CSV file loading...")
+            # Fallback to CSV loading
+            self.use_couchdb = False
+            self._load_and_index_data("cleaned_data")
     
     def _load_and_index_data(self, data_folder: str) -> None:
         """

@@ -48,6 +48,65 @@ class BudgetAnalysis:
         }
 
     def _find_similar_properties_with_embeddings(self, client_info: Dict[str, Any]) -> List[Dict]:
+        """Use embedding similarity or CouchDB queries to find relevant properties"""
+        
+        # If using CouchDB, use direct queries for efficiency
+        if hasattr(self, 'use_couchdb') and self.use_couchdb and hasattr(self, 'couchdb_provider'):
+            return self._find_properties_with_couchdb(client_info)
+        
+        # Fallback to embedding-based search
+        return self._find_properties_with_embeddings_legacy(client_info)
+    
+    def _find_properties_with_couchdb(self, client_info: Dict[str, Any]) -> List[Dict]:
+        """Use CouchDB direct queries to find relevant properties"""
+        print("🔍 Using CouchDB direct queries for property search...")
+        
+        city = client_info.get('city')
+        max_budget = client_info.get('budget') or client_info.get('max_price')
+        min_surface = client_info.get('min_size', 0)
+        property_type = client_info.get('property_type')
+        
+        # Expand budget range for better results
+        search_budget = None
+        if max_budget:
+            search_budget = max_budget * 1.5  # Search up to 150% of budget
+        
+        # Query CouchDB directly
+        properties = self.couchdb_provider.query_properties(
+            city=city,
+            max_price=search_budget,
+            min_surface=min_surface,
+            property_type=property_type,
+            limit=200
+        )
+        
+        print(f"📊 CouchDB query found {len(properties)} properties")
+        
+        # Convert to format expected by rest of the analysis
+        property_metadata = []
+        for prop in properties:
+            metadata = {
+                'City': prop.get('city', prop.get('City', '')),
+                'Title': prop.get('title', prop.get('Title', '')),
+                'Price': float(prop.get('price', prop.get('Price', 0))),
+                'Surface': float(prop.get('surface', prop.get('Surface', 0))),
+                'Location': prop.get('location', prop.get('Location', '')),
+                'Type': prop.get('type', prop.get('Type', '')),
+                'URL': prop.get('url', prop.get('URL', '')),
+                'id': prop.get('_id', ''),
+                'price_per_m2': 0
+            }
+            
+            # Calculate price per m²
+            if metadata['Price'] > 0 and metadata['Surface'] > 0:
+                metadata['price_per_m2'] = metadata['Price'] / metadata['Surface']
+            
+            property_metadata.append(metadata)
+        
+        print(f"📊 Converted {len(property_metadata)} properties to metadata format")
+        return property_metadata
+    
+    def _find_properties_with_embeddings_legacy(self, client_info: Dict[str, Any]) -> List[Dict]:
         """Use embedding similarity to find relevant properties with deduplication"""
         # Create query from client info
         query_parts = []
@@ -70,16 +129,19 @@ class BudgetAnalysis:
         print("🔍 Sample of embedding search results:")
         for i, doc in enumerate(similar_docs[:3]):
             prop = doc.metadata
-            print(f"   {i+1}. Price: {prop.get('Price', 0):,.0f} DT, Surface: {prop.get('Surface', 0):.0f}m², Type: {prop.get('Type', 'N/A')}")
-        
-        # Deduplicate properties using a unique key
+            print(f"   {i+1}. Price: {prop.get('Price', 0):,.0f} DT, Surface: {prop.get('Surface', 0):.0f}m², Type: {prop.get('Type', 'N/A')}")        # Deduplicate properties using exact attributes
         unique_properties = {}
         for doc in similar_docs:
             prop = doc.metadata
-            # Create unique key based on key attributes
-            unique_key = (prop.get('Price'), prop.get('Surface'), prop.get('City'), prop.get('Type'))
+            # Create unique key based on exact attributes to avoid losing variety
+            unique_key = (
+                prop.get('Price', 0),           # Exact price
+                prop.get('Surface', 0),         # Exact surface
+                prop.get('URL', ''),            # Exact URL (most unique identifier)
+                prop.get('Title', '')[:30]      # First 30 chars of title
+            )
             if unique_key not in unique_properties:
-                unique_properties[unique_key] = prop        
+                unique_properties[unique_key] = prop
         print(f"📊 After deduplication: {len(unique_properties)} unique properties from embeddings")
         
         # If we have a city filter, add more properties from that city
@@ -87,8 +149,7 @@ class BudgetAnalysis:
             city_properties = [p for p in self.property_metadata 
                              if p.get('City', '').lower() == client_info['city'].lower()]
             # print(f"🏙️ Direct city search found {len(city_properties)} properties in {client_info['city']}")
-            
-            # Add unique city properties
+              # Add unique city properties
             existing_keys = set(unique_properties.keys())
             added_count = 0
             for prop in city_properties:
@@ -100,6 +161,12 @@ class BudgetAnalysis:
             print(f"🔄 Added {added_count} additional unique properties from city search")
         
         deduplicated_props = list(unique_properties.values())
+          # Add some randomization to ensure variety in results
+        import random
+        if len(deduplicated_props) > 10:
+            # Keep the most relevant ones but add some randomization
+            deduplicated_props = deduplicated_props[:20] + random.sample(deduplicated_props[20:], min(10, len(deduplicated_props) - 20))
+        
         print(f"📊 Final deduplicated properties: {len(deduplicated_props)}")
         
         # Show price distribution to verify variety
@@ -129,11 +196,18 @@ class BudgetAnalysis:
         for prop in properties:
             include_property = True
             
-            # City filter (case insensitive) - make it more flexible
+            # City filter - use contains match for more flexible city matching
             if client_info.get('city'):
                 client_city = client_info['city'].lower().strip()
                 prop_city = prop.get('City', '').lower().strip()
-                if client_city not in prop_city and prop_city not in client_city:
+                prop_location = prop.get('Location', '').lower().strip()
+                
+                # Check if the client city is contained in either the city or location field
+                city_found = (client_city in prop_city or 
+                             client_city in prop_location or
+                             prop_city == client_city)
+                
+                if not city_found:
                     include_property = False
                 else:
                     city_matches += 1
@@ -145,9 +219,11 @@ class BudgetAnalysis:
                 else:
                     size_matches += 1
             
-            # Price filter - only apply if max_price is specified and > 0
-            if client_info.get('max_price') and client_info.get('max_price') > 0:
-                if prop.get('Price', 0) > client_info['max_price']:
+            # Price filter - CRITICAL: Apply max_price AND budget constraints
+            max_budget = client_info.get('max_price') or client_info.get('budget')
+            if max_budget and max_budget > 0:
+                prop_price = prop.get('Price', 0)
+                if prop_price > max_budget:
                     include_property = False
                 else:
                     price_matches += 1
@@ -156,10 +232,10 @@ class BudgetAnalysis:
             if client_info.get('property_type'):
                 client_type = client_info['property_type'].lower().strip()
                 prop_type = prop.get('Type', '').lower().strip()
-                if client_type not in prop_type and prop_type not in client_type:
+                if client_type and prop_type and client_type not in prop_type and prop_type not in client_type:
                     include_property = False
                 else:
-                    type_matches += 1            
+                    type_matches += 1
             if include_property:
                 filtered.append(prop)
         
