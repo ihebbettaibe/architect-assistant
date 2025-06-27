@@ -61,7 +61,7 @@ class EnhancedBudgetAgent:
     
     def _load_and_index_data_from_couchdb(self) -> None:
         """
-        Load and preprocess property data from CouchDB into ChromaDB with embedding storage
+        Load and preprocess property data from CouchDB with simplified indexing
         """
         try:
             # Initialize CouchDB provider
@@ -82,15 +82,21 @@ class EnhancedBudgetAgent:
             
             print(f"✅ Loaded {len(self.property_data)} properties from CouchDB")
             
-            # Create vectorstore
-            self._create_vectorstore()
+            # Try to create vectorstore, but continue if it fails
+            try:
+                self._create_vectorstore()
+            except Exception as vector_error:
+                print(f"⚠️ Vectorstore creation failed: {vector_error}")
+                print("📊 Continuing with basic property data (search will be limited)")
+                # Set up basic metadata for fallback
+                self._setup_basic_metadata()
             
         except Exception as e:
             print(f"❌ Error loading data from CouchDB: {e}")
             print("🔄 Falling back to CSV file loading...")
-            # Fallback to CSV loading
+            # Fallback to CSV loading with proper path detection
             self.use_couchdb = False
-            self._load_and_index_data("cleaned_data")
+            self._load_and_index_data_with_path_detection()
     
     def _load_and_index_data(self, data_folder: str) -> None:
         """
@@ -128,53 +134,67 @@ class EnhancedBudgetAgent:
         self._create_vectorstore()
     
     def _create_vectorstore(self):
-        """Create vectorstore and store embeddings"""
-        # Generate search text for each property
-        self.property_data['search_text'] = self._generate_search_text(self.property_data)
-        
-        # Create documents for Chroma
-        documents = []
-        embeddings_list = []
-        metadata_list = []
-        
-        for idx, row in self.property_data.iterrows():
-            # Create document
-            doc = Document(
-                page_content=row['search_text'],
-                metadata={
-                    'City': row.get('City', ''),
-                    'Title': row.get('Title', ''),
-                    'Price': float(row['Price']),
-                    'Surface': float(row['Surface']),
-                    'Location': row.get('Location', ''),
-                    'Type': row.get('Type', ''),
-                    'URL': row.get('URL', ''),
-                    'id': str(idx),
-                    'price_per_m2': float(row['Price']) / float(row['Surface'])
-                }
-            )
-            documents.append(doc)
+        """Create vectorstore and store embeddings with error handling"""
+        try:
+            # Generate search text for each property
+            self.property_data['search_text'] = self._generate_search_text(self.property_data)
             
-            # Generate embedding
-            embedding = self.embeddings.embed_query(row['search_text'])
-            embeddings_list.append(embedding)
-            metadata_list.append(doc.metadata)
-        
-        # Store embeddings and metadata
-        self.embedding_matrix = np.array(embeddings_list)
-        self.property_metadata = metadata_list
-        
-        # Create and populate Chroma vectorstore
-        self.vectorstore = Chroma(
-            embedding_function=self.embeddings,
-            persist_directory="./enhanced_property_db"
-        )
-        
-        # Add documents to vectorstore
-        if documents:
-            self.vectorstore.add_documents(documents)
-        
-        print(f"Indexed {len(documents)} properties with embeddings")
+            # Create documents for Chroma
+            documents = []
+            metadata_list = []
+            
+            for idx, row in self.property_data.iterrows():
+                # Create document
+                doc = Document(
+                    page_content=row['search_text'],
+                    metadata={
+                        'City': row.get('City', ''),
+                        'Title': row.get('Title', ''),
+                        'Price': float(row['Price']),
+                        'Surface': float(row['Surface']),
+                        'Location': row.get('Location', ''),
+                        'Type': row.get('Type', ''),
+                        'URL': row.get('URL', ''),
+                        'id': str(idx),
+                        'price_per_m2': float(row['Price']) / float(row['Surface'])
+                    }
+                )
+                documents.append(doc)
+                metadata_list.append(doc.metadata)
+            
+            # Store metadata
+            self.property_metadata = metadata_list
+            
+            # Try to create Chroma vectorstore with error handling
+            try:
+                self.vectorstore = Chroma(
+                    embedding_function=self.embeddings,
+                    persist_directory="./enhanced_property_db"
+                )
+                
+                # Add documents to vectorstore
+                if documents:
+                    self.vectorstore.add_documents(documents)
+                
+                print(f"Indexed {len(documents)} properties with embeddings")
+                
+            except Exception as chroma_error:
+                print(f"⚠️ ChromaDB vectorstore creation failed: {chroma_error}")
+                print("📊 Using basic embedding storage instead")
+                
+                # Generate embeddings manually for fallback
+                embeddings_list = []
+                for doc in documents:
+                    embedding = self.embeddings.embed_query(doc.page_content)
+                    embeddings_list.append(embedding)
+                
+                self.embedding_matrix = np.array(embeddings_list)
+                print(f"📊 Generated {len(embeddings_list)} embeddings for fallback search")
+                
+        except Exception as e:
+            print(f"❌ Error in vectorstore creation: {e}")
+            # Set up basic metadata as fallback
+            self._setup_basic_metadata()
     
     def _clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Enhanced data cleaning with validation"""
@@ -325,3 +345,56 @@ class EnhancedBudgetAgent:
             explanations.append("Best available option based on current market conditions")
         
         return f"Compatibility Score: {score:.1%}. " + ". ".join(explanations[:3]) + "."
+    
+    def _setup_basic_metadata(self):
+        """Setup basic metadata when vectorstore creation fails"""
+        self.property_metadata = []
+        for idx, row in self.property_data.iterrows():
+            metadata = {
+                'City': row.get('City', ''),
+                'Title': row.get('Title', ''),
+                'Price': float(row['Price']),
+                'Surface': float(row['Surface']),
+                'Location': row.get('Location', ''),
+                'Type': row.get('Type', ''),
+                'URL': row.get('URL', ''),
+                'id': str(idx),
+                'price_per_m2': float(row['Price']) / float(row['Surface'])
+            }
+            self.property_metadata.append(metadata)
+        print(f"📊 Set up basic metadata for {len(self.property_metadata)} properties")
+    
+    def _load_and_index_data_with_path_detection(self) -> None:
+        """
+        Load and preprocess property data with automatic path detection
+        """
+        # Try different possible paths for the cleaned_data folder
+        current_dir = os.path.dirname(__file__)
+        possible_paths = [
+            os.path.join(current_dir, "../../cleaned_data"),  # From agents/budget/ to root/cleaned_data
+            os.path.join(current_dir, "../../../cleaned_data"),  # Alternative path
+            "cleaned_data",  # If running from root
+            os.path.abspath(os.path.join(current_dir, "../../cleaned_data"))  # Absolute path
+        ]
+        
+        data_folder = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                data_folder = path
+                break
+        
+        if data_folder is None:
+            print("❌ No cleaned_data folder found. Using CouchDB data only.")
+            # If we have CouchDB data but no CSV files, continue with CouchDB data
+            if hasattr(self, 'property_data') and not self.property_data.empty:
+                print("✅ Continuing with CouchDB data (no vectorstore)")
+                self._setup_basic_metadata()
+                return
+            else:
+                raise FileNotFoundError(
+                    "Data folder 'cleaned_data' not found and no CouchDB data available. "
+                    "Please ensure the cleaned_data folder exists with property CSV files."
+                )
+        
+        print(f"📁 Found data folder: {data_folder}")
+        self._load_and_index_data(data_folder)

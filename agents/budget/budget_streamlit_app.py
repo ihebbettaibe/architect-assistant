@@ -779,8 +779,8 @@ if st.button("🚀 Analyser", type="primary", use_container_width=True):
                                     with col1:
                                         st.write(f"**Prix:** {prop.get('prix', 'N/A')} TND")
                                         st.write(f"**Surface:** {prop.get('surface', 'N/A')} m²")
-                                        st.write(f"**Type:** {prop.get('type', 'N/A')}")
-                                        st.write(f"**Ville:** {prop.get('ville', 'N/A')}")
+                                     
+                                     
                                     with col2:
                                         score = prop.get('budget_fit_score', 0)
                                         st.metric("Score Budget", f"{score:.1f}/10")
