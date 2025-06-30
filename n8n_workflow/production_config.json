@@ -1,0 +1,34 @@
+{
+  "couchdb": {
+    "url": "http://localhost:5984",
+    "username": "admin",
+    "password": "admin",
+    "database": "realstate_budget"
+  },
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "username": "",
+    "password": "",
+    "from_email": "",
+    "to_emails": [],
+    "send_daily_reports": true,
+    "send_error_alerts": true
+  },
+  "scraping": {
+    "delay_between_requests": 2.0,
+    "delay_between_cities": 5.0,
+    "delay_between_property_types": 3.0,
+    "timeout": 30,
+    "max_retries": 3,
+    "max_pages_per_city_type": 20,
+    "enable_removed_detection": true,
+    "snapshot_retention_days": 30
+  },
+  "scheduling": {
+    "daily_run_time": "02:00",
+    "enable_scheduler": false,
+    "run_on_weekends": true
+  },
+  "regions_file": "regions_data/flat_regions.json"
+}

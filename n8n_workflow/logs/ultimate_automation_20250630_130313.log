@@ -1,0 +1,6 @@
+2025-06-30 13:03:13,611 - ultimate_requests_automation - INFO - 🚀 ULTIMATE automation logging initialized - Level: INFO
+2025-06-30 13:03:16,026 - ultimate_requests_automation - INFO - 🗄️ Connected to CouchDB using URL auth - version: 3.5.0
+2025-06-30 13:03:16,030 - ultimate_requests_automation - INFO - 🚀 ULTIMATE TecnocasaAutomation initialized
+2025-06-30 13:03:16,030 - ultimate_requests_automation - INFO - 🚀 Starting ULTIMATE Tecnocasa Automation System...
+2025-06-30 13:03:16,031 - ultimate_requests_automation - ERROR - No regions to process
+2025-06-30 13:03:16,032 - ultimate_requests_automation - INFO - 🏁 Ultimate automation system shutdown complete

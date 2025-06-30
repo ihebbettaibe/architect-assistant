@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Simple Tunisia Terrain Classification RAG System
-Just uses local Llama model via Ollama - no API keys needed!
-"""
-
 import json
 import os
 import re

@@ -1,0 +1,55 @@
+2025-06-30 11:12:24,380 - final_tecnocasa_automation - INFO - Final automation logging initialized - Level: INFO
+2025-06-30 11:12:24,380 - final_tecnocasa_automation - INFO - Log file: logs/final_automation_20250630_111224.log
+2025-06-30 11:12:24,381 - final_tecnocasa_automation - INFO - Configuration loaded from config.json
+2025-06-30 11:12:24,381 - final_tecnocasa_automation - INFO - Enhanced session initialized with persistent settings
+2025-06-30 11:12:24,381 - final_tecnocasa_automation - INFO - Trying connection method: URL auth
+2025-06-30 11:12:26,438 - final_tecnocasa_automation - INFO - Successfully connected using URL auth - CouchDB version: 3.5.0
+2025-06-30 11:12:26,442 - final_tecnocasa_automation - INFO - Connected to existing CouchDB database: realstate_budget
+2025-06-30 11:12:26,442 - final_tecnocasa_automation - INFO - Final TecnocasaAutomation initialized successfully
+2025-06-30 11:12:26,442 - __main__ - INFO - Testing with 2 regions
+2025-06-30 11:12:26,442 - __main__ - INFO - 
+--- Testing Region 1: Ariana Test ---
+2025-06-30 11:12:26,443 - __main__ - INFO - Fetching region page: https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html
+2025-06-30 11:12:30,289 - final_tecnocasa_automation - WARNING - Blocking detected for: https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html (attempt 1)
+2025-06-30 11:12:30,290 - final_tecnocasa_automation - INFO - Attempting blocking bypass (strategy 1)...
+2025-06-30 11:12:30,291 - final_tecnocasa_automation - INFO - Strategy 1: Waiting 30.8s and refreshing headers...
+2025-06-30 11:13:01,106 - final_tecnocasa_automation - INFO - Bypass successful!
+2025-06-30 11:13:01,106 - final_tecnocasa_automation - INFO - Waiting 4s before retry 2...
+2025-06-30 11:13:05,391 - final_tecnocasa_automation - WARNING - Blocking detected for: https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html (attempt 2)
+2025-06-30 11:13:05,392 - final_tecnocasa_automation - INFO - Attempting blocking bypass (strategy 2)...
+2025-06-30 11:13:05,392 - final_tecnocasa_automation - INFO - Strategy 2: Creating new session...
+2025-06-30 11:13:05,392 - final_tecnocasa_automation - INFO - Enhanced session initialized with persistent settings
+2025-06-30 11:13:23,386 - final_tecnocasa_automation - INFO - Bypass successful!
+2025-06-30 11:13:23,386 - final_tecnocasa_automation - INFO - Waiting 9s before retry 3...
+2025-06-30 11:13:33,585 - final_tecnocasa_automation - WARNING - Blocking detected for: https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html (attempt 3)
+2025-06-30 11:13:33,586 - final_tecnocasa_automation - INFO - Attempting blocking bypass (strategy 3)...
+2025-06-30 11:13:33,586 - final_tecnocasa_automation - INFO - Strategy 3: Changing to different browser profile...
+2025-06-30 11:14:00,289 - final_tecnocasa_automation - INFO - Bypass successful!
+2025-06-30 11:14:00,289 - final_tecnocasa_automation - ERROR - Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html after 3 attempts
+2025-06-30 11:14:00,290 - __main__ - ERROR - [FAILED] Could not fetch region page
+2025-06-30 11:14:00,290 - __main__ - INFO - 
+--- Testing Region 2: Sousse Test ---
+2025-06-30 11:14:00,291 - __main__ - INFO - Fetching region page: https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse.html
+2025-06-30 11:14:03,802 - __main__ - ERROR - [FAILED] Could not fetch region page
+2025-06-30 11:14:03,803 - __main__ - INFO - 
+============================================================
+2025-06-30 11:14:03,803 - __main__ - INFO - FINAL TEST RESULTS
+2025-06-30 11:14:03,804 - __main__ - INFO - ============================================================
+2025-06-30 11:14:03,804 - __main__ - INFO - Regions tested: 2
+2025-06-30 11:14:03,805 - __main__ - INFO - Successful regions: 0
+2025-06-30 11:14:03,805 - __main__ - INFO - Total offers found: 0
+2025-06-30 11:14:03,805 - __main__ - INFO - Region success rate: 0.0%
+2025-06-30 11:14:03,805 - __main__ - INFO - Request success rate: 0.0%
+2025-06-30 11:14:03,805 - __main__ - INFO - Total requests: 2
+2025-06-30 11:14:03,805 - __main__ - INFO - Successful requests: 0
+2025-06-30 11:14:03,806 - __main__ - INFO - CAPTCHA encounters: 3
+2025-06-30 11:14:03,806 - __main__ - INFO - Successful bypasses: 3
+2025-06-30 11:14:03,806 - __main__ - INFO - User agent rotations: 4
+2025-06-30 11:14:03,806 - __main__ - INFO - Database operations: 0
+2025-06-30 11:14:03,806 - __main__ - INFO - Total errors: 1
+2025-06-30 11:14:03,806 - __main__ - ERROR - 
+[FAILED] AUTOMATION TEST FAILED
+2025-06-30 11:14:03,807 - __main__ - ERROR - The automation system needs significant improvements.
+2025-06-30 11:14:03,807 - __main__ - INFO - CAPTCHA bypass rate: 100.0%
+2025-06-30 11:14:03,807 - __main__ - INFO - Error rate: 50.0%
+2025-06-30 11:14:03,808 - __main__ - INFO - Test completed and resources cleaned up

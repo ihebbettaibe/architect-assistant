@@ -1,0 +1,37 @@
+{
+  "report_date": "2025-06-30T14:36:02.089491",
+  "automation_duration": "0:00:25.577375",
+  "summary": {
+    "cities_processed": 3,
+    "property_types_processed": 2,
+    "pages_fetched": 12,
+    "properties_found": 156,
+    "properties_saved": 0,
+    "properties_updated": 156,
+    "properties_removed": 0,
+    "errors": 0,
+    "blocked_requests": 0,
+    "success_rate": "100.0%"
+  },
+  "city_breakdown": {
+    "sousse": {
+      "terrain_pages": 2,
+      "terrain_properties": 30,
+      "appartement_pages": 2,
+      "appartement_properties": 30
+    },
+    "sfax": {
+      "terrain_pages": 2,
+      "terrain_properties": 18,
+      "appartement_pages": 2,
+      "appartement_properties": 18
+    },
+    "monastir": {
+      "terrain_pages": 2,
+      "terrain_properties": 30,
+      "appartement_pages": 2,
+      "appartement_properties": 30
+    }
+  },
+  "error_log": []
+}

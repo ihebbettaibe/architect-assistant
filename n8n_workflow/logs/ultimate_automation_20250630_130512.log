@@ -1,0 +1,347 @@
+2025-06-30 13:05:12,027 - ultimate_requests_automation - INFO - 🚀 ULTIMATE automation logging initialized - Level: INFO
+2025-06-30 13:05:14,132 - ultimate_requests_automation - INFO - 🗄️ Connected to CouchDB using URL auth - version: 3.5.0
+2025-06-30 13:05:14,135 - ultimate_requests_automation - INFO - 🚀 ULTIMATE TecnocasaAutomation initialized
+2025-06-30 13:05:14,149 - ultimate_requests_automation - INFO - 🚀 Starting ULTIMATE Tecnocasa Automation System...
+2025-06-30 13:05:14,150 - ultimate_requests_automation - INFO - 🚀============================================================
+2025-06-30 13:05:14,151 - ultimate_requests_automation - INFO - 🚀 ULTIMATE TECNOCASA AUTOMATION SYSTEM
+2025-06-30 13:05:14,151 - ultimate_requests_automation - INFO - 🚀============================================================
+2025-06-30 13:05:14,151 - ultimate_requests_automation - INFO - 🎯 Processing 54 regions with ultimate techniques...
+2025-06-30 13:05:14,152 - ultimate_requests_automation - INFO - 🌍 Region 1/54: Grand Tunis - Main
+2025-06-30 13:05:18,275 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:20,791 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:23,298 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:23,298 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis.html after 3 ultimate attempts
+2025-06-30 13:05:23,299 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Main
+2025-06-30 13:05:23,299 - ultimate_requests_automation - INFO - 🌍 Region 2/54: Grand Tunis - Ain Zaghouan
+2025-06-30 13:05:25,804 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ain-zaghouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:28,305 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ain-zaghouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:30,821 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ain-zaghouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:30,821 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ain-zaghouan.html after 3 ultimate attempts
+2025-06-30 13:05:30,822 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Ain Zaghouan
+2025-06-30 13:05:30,822 - ultimate_requests_automation - INFO - 🌍 Region 3/54: Grand Tunis - Aouina
+2025-06-30 13:05:33,338 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/aouina.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:35,844 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/aouina.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:38,347 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/aouina.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:38,348 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/aouina.html after 3 ultimate attempts
+2025-06-30 13:05:38,348 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Aouina
+2025-06-30 13:05:38,348 - ultimate_requests_automation - INFO - 🌍 Region 4/54: Grand Tunis - Ariana
+2025-06-30 13:05:40,863 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:43,374 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:45,889 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:45,890 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ariana.html after 3 ultimate attempts
+2025-06-30 13:05:45,890 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Ariana
+2025-06-30 13:05:45,890 - ultimate_requests_automation - INFO - 🌍 Region 5/54: Grand Tunis - Bou Mhel El-Bassatine
+2025-06-30 13:05:48,405 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/bou-mhel-el-bassatine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:50,920 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/bou-mhel-el-bassatine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:53,430 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/bou-mhel-el-bassatine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:53,431 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/bou-mhel-el-bassatine.html after 3 ultimate attempts
+2025-06-30 13:05:53,431 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Bou Mhel El-Bassatine
+2025-06-30 13:05:53,431 - ultimate_requests_automation - INFO - 🌍 Region 6/54: Grand Tunis - El Menzah
+2025-06-30 13:05:55,945 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:05:58,457 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:00,971 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:00,972 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/el-menzah.html after 3 ultimate attempts
+2025-06-30 13:06:00,972 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - El Menzah
+2025-06-30 13:06:00,973 - ultimate_requests_automation - INFO - 🌍 Region 7/54: Grand Tunis - Ezzahra
+2025-06-30 13:06:03,484 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ezzahra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:05,988 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ezzahra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:08,493 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ezzahra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:08,493 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/ezzahra.html after 3 ultimate attempts
+2025-06-30 13:06:08,493 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Ezzahra
+2025-06-30 13:06:08,494 - ultimate_requests_automation - INFO - 🌍 Region 8/54: Grand Tunis - Gammarth
+2025-06-30 13:06:11,000 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/gammarth.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:13,506 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/gammarth.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:16,011 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/gammarth.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:16,014 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/gammarth.html after 3 ultimate attempts
+2025-06-30 13:06:16,015 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Gammarth
+2025-06-30 13:06:16,019 - ultimate_requests_automation - INFO - 🌍 Region 9/54: Grand Tunis - Jardins d'El Menzah
+2025-06-30 13:06:18,535 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/jardins-d-el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:21,049 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/jardins-d-el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:23,551 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/jardins-d-el-menzah.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:23,552 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/jardins-d-el-menzah.html after 3 ultimate attempts
+2025-06-30 13:06:23,552 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Jardins d'El Menzah
+2025-06-30 13:06:23,552 - ultimate_requests_automation - INFO - 🌍 Region 10/54: Grand Tunis - La Goulette
+2025-06-30 13:06:26,053 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-goulette.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:28,555 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-goulette.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:31,064 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-goulette.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:31,065 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-goulette.html after 3 ultimate attempts
+2025-06-30 13:06:31,065 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - La Goulette
+2025-06-30 13:06:31,065 - ultimate_requests_automation - INFO - 🌍 Region 11/54: Grand Tunis - La Manouba
+2025-06-30 13:06:33,573 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-manouba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:36,077 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-manouba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:38,588 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-manouba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:38,588 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-manouba.html after 3 ultimate attempts
+2025-06-30 13:06:38,588 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - La Manouba
+2025-06-30 13:06:38,588 - ultimate_requests_automation - INFO - 🌍 Region 12/54: Grand Tunis - La Marsa
+2025-06-30 13:06:41,090 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-marsa.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:43,603 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-marsa.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:46,108 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-marsa.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:46,109 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-marsa.html after 3 ultimate attempts
+2025-06-30 13:06:46,109 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - La Marsa
+2025-06-30 13:06:46,110 - ultimate_requests_automation - INFO - 🌍 Region 13/54: Grand Tunis - La Soukra
+2025-06-30 13:06:48,625 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-soukra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:51,139 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-soukra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:53,643 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-soukra.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:53,644 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/la-soukra.html after 3 ultimate attempts
+2025-06-30 13:06:53,644 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - La Soukra
+2025-06-30 13:06:53,644 - ultimate_requests_automation - INFO - 🌍 Region 14/54: Grand Tunis - Lafayette Centre Ville
+2025-06-30 13:06:56,155 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/lafayette-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:06:58,672 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/lafayette-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:01,176 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/lafayette-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:01,176 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/lafayette-centre-ville.html after 3 ultimate attempts
+2025-06-30 13:07:01,176 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Lafayette Centre Ville
+2025-06-30 13:07:01,177 - ultimate_requests_automation - INFO - 🌍 Region 15/54: Grand Tunis - Le Bardo
+2025-06-30 13:07:03,688 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/le-bardo.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:06,196 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/le-bardo.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:08,702 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/le-bardo.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:08,702 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/le-bardo.html after 3 ultimate attempts
+2025-06-30 13:07:08,702 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Le Bardo
+2025-06-30 13:07:08,703 - ultimate_requests_automation - INFO - 🌍 Region 16/54: Grand Tunis - Manar
+2025-06-30 13:07:11,217 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/manar.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:13,722 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/manar.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:16,225 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/manar.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:16,226 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/manar.html after 3 ultimate attempts
+2025-06-30 13:07:16,226 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Manar
+2025-06-30 13:07:16,226 - ultimate_requests_automation - INFO - 🌍 Region 17/54: Grand Tunis - Medina Jedida
+2025-06-30 13:07:18,739 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/medina-jedida.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:21,244 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/medina-jedida.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:23,760 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/medina-jedida.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:23,761 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/medina-jedida.html after 3 ultimate attempts
+2025-06-30 13:07:23,762 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Medina Jedida
+2025-06-30 13:07:23,762 - ultimate_requests_automation - INFO - 🌍 Region 18/54: Grand Tunis - Mornag
+2025-06-30 13:07:26,270 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mornag.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:28,785 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mornag.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:31,288 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mornag.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:31,288 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mornag.html after 3 ultimate attempts
+2025-06-30 13:07:31,289 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Mornag
+2025-06-30 13:07:31,289 - ultimate_requests_automation - INFO - 🌍 Region 19/54: Grand Tunis - Mutuelleville
+2025-06-30 13:07:33,791 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mutuelleville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:36,307 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mutuelleville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:38,820 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mutuelleville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:38,821 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/mutuelleville.html after 3 ultimate attempts
+2025-06-30 13:07:38,822 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Mutuelleville
+2025-06-30 13:07:38,822 - ultimate_requests_automation - INFO - 🌍 Region 20/54: Grand Tunis - Mégrine
+2025-06-30 13:07:41,324 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/megrine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:43,836 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/megrine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:46,347 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/megrine.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:46,348 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/megrine.html after 3 ultimate attempts
+2025-06-30 13:07:46,348 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Mégrine
+2025-06-30 13:07:46,348 - ultimate_requests_automation - INFO - 🌍 Region 21/54: Grand Tunis - Zone Industrielles Nord
+2025-06-30 13:07:48,855 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/zone-industrielles-nord.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:51,362 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/zone-industrielles-nord.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:53,865 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/zone-industrielles-nord.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:53,865 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/grand-tunis/zone-industrielles-nord.html after 3 ultimate attempts
+2025-06-30 13:07:53,865 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Grand Tunis - Zone Industrielles Nord
+2025-06-30 13:07:53,866 - ultimate_requests_automation - INFO - 🌍 Region 22/54: Sousse - Main
+2025-06-30 13:07:56,371 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:07:58,874 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:01,385 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:01,386 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse.html after 3 ultimate attempts
+2025-06-30 13:08:01,386 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Main
+2025-06-30 13:08:01,386 - ultimate_requests_automation - INFO - 🌍 Region 23/54: Sousse - Akouda
+2025-06-30 13:08:03,900 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/akouda.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:06,404 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/akouda.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:08,907 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/akouda.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:08,907 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/akouda.html after 3 ultimate attempts
+2025-06-30 13:08:08,907 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Akouda
+2025-06-30 13:08:08,908 - ultimate_requests_automation - INFO - 🌍 Region 24/54: Sousse - Chott Meriam
+2025-06-30 13:08:11,416 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/chott-meriam.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:13,928 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/chott-meriam.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:16,433 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/chott-meriam.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:16,433 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/chott-meriam.html after 3 ultimate attempts
+2025-06-30 13:08:16,434 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Chott Meriam
+2025-06-30 13:08:16,434 - ultimate_requests_automation - INFO - 🌍 Region 25/54: Sousse - El Kantaoui
+2025-06-30 13:08:18,935 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/el-kantaoui.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:21,446 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/el-kantaoui.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:23,948 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/el-kantaoui.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:23,949 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/el-kantaoui.html after 3 ultimate attempts
+2025-06-30 13:08:23,949 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - El Kantaoui
+2025-06-30 13:08:23,949 - ultimate_requests_automation - INFO - 🌍 Region 26/54: Sousse - Hammam Sousse
+2025-06-30 13:08:26,451 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hammam-sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:28,953 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hammam-sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:31,455 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hammam-sousse.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:31,455 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hammam-sousse.html after 3 ultimate attempts
+2025-06-30 13:08:31,456 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Hammam Sousse
+2025-06-30 13:08:31,456 - ultimate_requests_automation - INFO - 🌍 Region 27/54: Sousse - Hergla
+2025-06-30 13:08:33,967 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hergla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:36,485 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hergla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:38,991 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hergla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:38,992 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/hergla.html after 3 ultimate attempts
+2025-06-30 13:08:38,992 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Hergla
+2025-06-30 13:08:38,993 - ultimate_requests_automation - INFO - 🌍 Region 28/54: Sousse - Kalâa Seghira
+2025-06-30 13:08:41,501 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/kalaa-seghira.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:44,013 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/kalaa-seghira.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:46,518 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/kalaa-seghira.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:46,518 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/kalaa-seghira.html after 3 ultimate attempts
+2025-06-30 13:08:46,518 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Kalâa Seghira
+2025-06-30 13:08:46,519 - ultimate_requests_automation - INFO - 🌍 Region 29/54: Sousse - Khezama
+2025-06-30 13:08:49,024 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/khezama.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:51,534 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/khezama.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:54,045 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/khezama.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:54,045 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/khezama.html after 3 ultimate attempts
+2025-06-30 13:08:54,045 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Khezama
+2025-06-30 13:08:54,045 - ultimate_requests_automation - INFO - 🌍 Region 30/54: Sousse - M'Saken
+2025-06-30 13:08:56,558 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/m-saken.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:08:59,067 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/m-saken.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:01,574 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/m-saken.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:01,574 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/m-saken.html after 3 ultimate attempts
+2025-06-30 13:09:01,575 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - M'Saken
+2025-06-30 13:09:01,575 - ultimate_requests_automation - INFO - 🌍 Region 31/54: Sousse - Sahloul
+2025-06-30 13:09:04,087 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sahloul.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:06,597 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sahloul.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:09,103 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sahloul.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:09,103 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sahloul.html after 3 ultimate attempts
+2025-06-30 13:09:09,103 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Sahloul
+2025-06-30 13:09:09,104 - ultimate_requests_automation - INFO - 🌍 Region 32/54: Sousse - Sidi Bou Ali
+2025-06-30 13:09:11,610 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sidi-bou-ali.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:14,120 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sidi-bou-ali.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:16,625 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sidi-bou-ali.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:16,625 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sidi-bou-ali.html after 3 ultimate attempts
+2025-06-30 13:09:16,626 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Sidi Bou Ali
+2025-06-30 13:09:16,626 - ultimate_requests_automation - INFO - 🌍 Region 33/54: Sousse - Sousse Centre Ville
+2025-06-30 13:09:19,129 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:21,644 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:24,154 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-centre-ville.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:24,155 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-centre-ville.html after 3 ultimate attempts
+2025-06-30 13:09:24,155 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Sousse Centre Ville
+2025-06-30 13:09:24,155 - ultimate_requests_automation - INFO - 🌍 Region 34/54: Sousse - Sousse Riadh
+2025-06-30 13:09:26,669 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-riadh.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:29,176 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-riadh.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:31,691 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-riadh.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:31,691 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sousse/sousse-riadh.html after 3 ultimate attempts
+2025-06-30 13:09:31,691 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sousse - Sousse Riadh
+2025-06-30 13:09:31,692 - ultimate_requests_automation - INFO - 🌍 Region 35/54: Sfax - Main
+2025-06-30 13:09:34,204 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:36,710 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:39,220 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:39,220 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax.html after 3 ultimate attempts
+2025-06-30 13:09:39,221 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sfax - Main
+2025-06-30 13:09:39,221 - ultimate_requests_automation - INFO - 🌍 Region 36/54: Sfax - Sfax
+2025-06-30 13:09:41,725 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:44,241 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:46,752 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax/sfax.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:46,752 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/sfax/sfax.html after 3 ultimate attempts
+2025-06-30 13:09:46,753 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Sfax - Sfax
+2025-06-30 13:09:46,753 - ultimate_requests_automation - INFO - 🌍 Region 37/54: Monastir - Main
+2025-06-30 13:09:49,255 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:51,767 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:54,269 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:54,270 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir.html after 3 ultimate attempts
+2025-06-30 13:09:54,270 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Main
+2025-06-30 13:09:54,270 - ultimate_requests_automation - INFO - 🌍 Region 38/54: Monastir - Bekalta
+2025-06-30 13:09:56,775 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bekalta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:09:59,290 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bekalta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:01,801 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bekalta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:01,801 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bekalta.html after 3 ultimate attempts
+2025-06-30 13:10:01,802 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Bekalta
+2025-06-30 13:10:01,802 - ultimate_requests_automation - INFO - 🌍 Region 39/54: Monastir - Bembla
+2025-06-30 13:10:04,308 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bembla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:06,820 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bembla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:09,330 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bembla.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:09,331 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/bembla.html after 3 ultimate attempts
+2025-06-30 13:10:09,331 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Bembla
+2025-06-30 13:10:09,331 - ultimate_requests_automation - INFO - 🌍 Region 40/54: Monastir - Ksar Hellal
+2025-06-30 13:10:11,836 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/ksar-hellal.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:14,342 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/ksar-hellal.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:16,850 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/ksar-hellal.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:16,851 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/ksar-hellal.html after 3 ultimate attempts
+2025-06-30 13:10:16,851 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Ksar Hellal
+2025-06-30 13:10:16,851 - ultimate_requests_automation - INFO - 🌍 Region 41/54: Monastir - Monastir
+2025-06-30 13:10:19,357 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:21,867 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:24,380 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/monastir.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:24,381 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/monastir.html after 3 ultimate attempts
+2025-06-30 13:10:24,381 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Monastir
+2025-06-30 13:10:24,381 - ultimate_requests_automation - INFO - 🌍 Region 42/54: Monastir - Sahline
+2025-06-30 13:10:26,889 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/sahline.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:29,401 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/sahline.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:31,912 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/sahline.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:31,913 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/sahline.html after 3 ultimate attempts
+2025-06-30 13:10:31,913 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Sahline
+2025-06-30 13:10:31,913 - ultimate_requests_automation - INFO - 🌍 Region 43/54: Monastir - Teboulba
+2025-06-30 13:10:34,416 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/teboulba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:36,919 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/teboulba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:39,426 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/teboulba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:39,426 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/monastir/teboulba.html after 3 ultimate attempts
+2025-06-30 13:10:39,426 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Monastir - Teboulba
+2025-06-30 13:10:39,427 - ultimate_requests_automation - INFO - 🌍 Region 44/54: Mahdia - Main
+2025-06-30 13:10:41,935 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:44,439 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:46,952 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:46,953 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia.html after 3 ultimate attempts
+2025-06-30 13:10:46,953 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Main
+2025-06-30 13:10:46,953 - ultimate_requests_automation - INFO - 🌍 Region 45/54: Mahdia - Baghdedi
+2025-06-30 13:10:49,459 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/baghdedi.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:51,963 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/baghdedi.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:54,465 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/baghdedi.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:54,465 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/baghdedi.html after 3 ultimate attempts
+2025-06-30 13:10:54,466 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Baghdedi
+2025-06-30 13:10:54,466 - ultimate_requests_automation - INFO - 🌍 Region 46/54: Mahdia - Chebba
+2025-06-30 13:10:56,969 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/chebba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:10:59,471 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/chebba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:01,987 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/chebba.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:01,987 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/chebba.html after 3 ultimate attempts
+2025-06-30 13:11:01,987 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Chebba
+2025-06-30 13:11:01,988 - ultimate_requests_automation - INFO - 🌍 Region 47/54: Mahdia - Ksour Essef
+2025-06-30 13:11:04,490 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/ksour-essef.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:06,995 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/ksour-essef.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:09,496 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/ksour-essef.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:09,497 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/ksour-essef.html after 3 ultimate attempts
+2025-06-30 13:11:09,497 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Ksour Essef
+2025-06-30 13:11:09,497 - ultimate_requests_automation - INFO - 🌍 Region 48/54: Mahdia - Mahdia
+2025-06-30 13:11:12,010 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:14,511 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:17,025 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/mahdia.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:17,026 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/mahdia.html after 3 ultimate attempts
+2025-06-30 13:11:17,026 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Mahdia
+2025-06-30 13:11:17,026 - ultimate_requests_automation - INFO - 🌍 Region 49/54: Mahdia - Rejiche
+2025-06-30 13:11:19,541 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/rejiche.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:22,058 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/rejiche.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:24,565 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/rejiche.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:24,566 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/rejiche.html after 3 ultimate attempts
+2025-06-30 13:11:24,566 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Rejiche
+2025-06-30 13:11:24,566 - ultimate_requests_automation - INFO - 🌍 Region 50/54: Mahdia - Salakta
+2025-06-30 13:11:27,081 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/salakta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:29,588 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/salakta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:32,099 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/salakta.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:32,099 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/mahdia/salakta.html after 3 ultimate attempts
+2025-06-30 13:11:32,100 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Mahdia - Salakta
+2025-06-30 13:11:32,100 - ultimate_requests_automation - INFO - 🌍 Region 51/54: Kairouan - Main
+2025-06-30 13:11:34,603 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:37,112 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:39,614 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:39,614 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan.html after 3 ultimate attempts
+2025-06-30 13:11:39,615 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Kairouan - Main
+2025-06-30 13:11:39,615 - ultimate_requests_automation - INFO - 🌍 Region 52/54: Kairouan - Kairouan
+2025-06-30 13:11:42,122 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:44,626 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:47,137 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan/kairouan.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:47,137 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/centre-est-ce/kairouan/kairouan.html after 3 ultimate attempts
+2025-06-30 13:11:47,138 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Kairouan - Kairouan
+2025-06-30 13:11:47,138 - ultimate_requests_automation - INFO - 🌍 Region 53/54: Bizerte - Main
+2025-06-30 13:11:49,647 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:52,149 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:54,650 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:54,651 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte.html after 3 ultimate attempts
+2025-06-30 13:11:54,651 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Bizerte - Main
+2025-06-30 13:11:54,651 - ultimate_requests_automation - INFO - 🌍 Region 54/54: Bizerte - Bizerte
+2025-06-30 13:11:57,161 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:11:59,671 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:12:02,186 - ultimate_requests_automation - ERROR - Ultimate request failed for https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte/bizerte.html: 'HTTPTransport' object has no attribute 'handle_async_request'
+2025-06-30 13:12:02,187 - ultimate_requests_automation - ERROR - ❌ Failed to fetch https://www.tecnocasa.tn/vendre/terrain/nord-est-ne/bizerte/bizerte.html after 3 ultimate attempts
+2025-06-30 13:12:02,187 - ultimate_requests_automation - WARNING - ⚠️ No offers found in region: Bizerte - Bizerte
+2025-06-30 13:12:02,187 - ultimate_requests_automation - INFO - 🚀============================================================
+2025-06-30 13:12:02,188 - ultimate_requests_automation - INFO - 🚀 ULTIMATE AUTOMATION COMPLETED
+2025-06-30 13:12:02,188 - ultimate_requests_automation - INFO - 🚀============================================================
+2025-06-30 13:12:02,188 - ultimate_requests_automation - INFO - ⏱️  Duration: 0:06:48.035669
+2025-06-30 13:12:02,188 - ultimate_requests_automation - INFO - 🌍 Regions processed: 0
+2025-06-30 13:12:02,188 - ultimate_requests_automation - INFO - 🎯 Total offers found: 0
+2025-06-30 13:12:02,189 - ultimate_requests_automation - INFO - 🆕 New offers: 0
+2025-06-30 13:12:02,189 - ultimate_requests_automation - INFO - 🔄 Updated offers: 0
+2025-06-30 13:12:02,189 - ultimate_requests_automation - INFO - 📊 Success rate: 0.0%
+2025-06-30 13:12:02,189 - ultimate_requests_automation - INFO - 🛡️ CAPTCHA encounters: 0
+2025-06-30 13:12:02,189 - ultimate_requests_automation - INFO - ✅ Successful bypasses: 0
+2025-06-30 13:12:02,190 - ultimate_requests_automation - INFO - 🔄 Session rotations: 0
+2025-06-30 13:12:02,190 - ultimate_requests_automation - INFO - 🌐 HTTP/2 requests: 0
+2025-06-30 13:12:02,190 - ultimate_requests_automation - INFO - 🧠 Adaptive adjustments: 0
+2025-06-30 13:12:02,190 - ultimate_requests_automation - INFO - 🚀============================================================

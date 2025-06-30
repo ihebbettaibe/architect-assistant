@@ -1,0 +1,74 @@
+2025-06-30 14:35:34,441 - production_automation - INFO - 🚀 Production automation logging initialized
+2025-06-30 14:35:36,509 - production_automation - INFO - 🗄️ Connected to CouchDB - database: realstate_budget
+2025-06-30 14:35:36,510 - production_automation - INFO - 🏭 Production Tecnocasa automation initialized
+2025-06-30 14:35:36,512 - production_automation - INFO - 🏭 Starting Production Tecnocasa Automation
+2025-06-30 14:35:36,512 - production_automation - INFO - ================================================================================
+2025-06-30 14:35:36,513 - production_automation - INFO - 🌍 Cities: 3
+2025-06-30 14:35:36,514 - production_automation - INFO - 🏠 Property Types: 2
+2025-06-30 14:35:36,514 - production_automation - INFO - 📊 Total Combinations: 6
+2025-06-30 14:35:36,514 - production_automation - INFO - ================================================================================
+2025-06-30 14:35:36,514 - production_automation - INFO - 🏙️ Processing Terrain in Sousse
+2025-06-30 14:35:36,514 - production_automation - INFO - 🏙️ Fetching Terrain in Sousse (max 2 pages)
+2025-06-30 14:35:37,136 - production_automation - INFO - ✅ Saved 15 Terrain from Sousse page 1
+2025-06-30 14:35:38,536 - production_automation - INFO - ✅ Saved 15 Terrain from Sousse page 2
+2025-06-30 14:35:38,629 - production_automation - INFO - ✅ Extracted 15 properties from sousse_terrain_page1_20250630_143537.html
+2025-06-30 14:35:38,768 - production_automation - INFO - ✅ Extracted 15 properties from sousse_terrain_page2_20250630_143538.html
+2025-06-30 14:35:38,768 - production_automation - INFO - ✅ Sousse Terrain: 30 properties found
+2025-06-30 14:35:39,770 - production_automation - INFO - 🏙️ Processing Appartement in Sousse
+2025-06-30 14:35:39,770 - production_automation - INFO - 🏙️ Fetching Appartement in Sousse (max 2 pages)
+2025-06-30 14:35:40,117 - production_automation - INFO - ✅ Saved 15 Appartement from Sousse page 1
+2025-06-30 14:35:41,984 - production_automation - INFO - ✅ Saved 15 Appartement from Sousse page 2
+2025-06-30 14:35:42,072 - production_automation - INFO - ✅ Extracted 15 properties from sousse_appartement_page1_20250630_143540.html
+2025-06-30 14:35:42,152 - production_automation - INFO - ✅ Extracted 15 properties from sousse_appartement_page2_20250630_143541.html
+2025-06-30 14:35:42,153 - production_automation - INFO - ✅ Sousse Appartement: 30 properties found
+2025-06-30 14:35:43,154 - production_automation - INFO - 🏙️ Sousse: 60 total properties
+2025-06-30 14:35:45,154 - production_automation - INFO - 🏙️ Processing Terrain in Sfax
+2025-06-30 14:35:45,155 - production_automation - INFO - 🏙️ Fetching Terrain in Sfax (max 2 pages)
+2025-06-30 14:35:45,473 - production_automation - INFO - ✅ Saved 9 Terrain from Sfax page 1
+2025-06-30 14:35:46,913 - production_automation - INFO - ✅ Saved 9 Terrain from Sfax page 2
+2025-06-30 14:35:47,001 - production_automation - INFO - ✅ Extracted 9 properties from sfax_terrain_page1_20250630_143545.html
+2025-06-30 14:35:47,079 - production_automation - INFO - ✅ Extracted 9 properties from sfax_terrain_page2_20250630_143546.html
+2025-06-30 14:35:47,079 - production_automation - INFO - ✅ Sfax Terrain: 18 properties found
+2025-06-30 14:35:48,081 - production_automation - INFO - 🏙️ Processing Appartement in Sfax
+2025-06-30 14:35:48,081 - production_automation - INFO - 🏙️ Fetching Appartement in Sfax (max 2 pages)
+2025-06-30 14:35:48,902 - production_automation - INFO - ✅ Saved 9 Appartement from Sfax page 1
+2025-06-30 14:35:50,265 - production_automation - INFO - ✅ Saved 9 Appartement from Sfax page 2
+2025-06-30 14:35:50,337 - production_automation - INFO - ✅ Extracted 9 properties from sfax_appartement_page1_20250630_143548.html
+2025-06-30 14:35:50,418 - production_automation - INFO - ✅ Extracted 9 properties from sfax_appartement_page2_20250630_143550.html
+2025-06-30 14:35:50,418 - production_automation - INFO - ✅ Sfax Appartement: 18 properties found
+2025-06-30 14:35:51,419 - production_automation - INFO - 🏙️ Sfax: 36 total properties
+2025-06-30 14:35:53,420 - production_automation - INFO - 🏙️ Processing Terrain in Monastir
+2025-06-30 14:35:53,421 - production_automation - INFO - 🏙️ Fetching Terrain in Monastir (max 2 pages)
+2025-06-30 14:35:53,835 - production_automation - INFO - ✅ Saved 15 Terrain from Monastir page 1
+2025-06-30 14:35:55,203 - production_automation - INFO - ✅ Saved 15 Terrain from Monastir page 2
+2025-06-30 14:35:55,279 - production_automation - INFO - ✅ Extracted 15 properties from monastir_terrain_page1_20250630_143553.html
+2025-06-30 14:35:55,363 - production_automation - INFO - ✅ Extracted 15 properties from monastir_terrain_page2_20250630_143555.html
+2025-06-30 14:35:55,363 - production_automation - INFO - ✅ Monastir Terrain: 30 properties found
+2025-06-30 14:35:56,365 - production_automation - INFO - 🏙️ Processing Appartement in Monastir
+2025-06-30 14:35:56,365 - production_automation - INFO - 🏙️ Fetching Appartement in Monastir (max 2 pages)
+2025-06-30 14:35:56,697 - production_automation - INFO - ✅ Saved 15 Appartement from Monastir page 1
+2025-06-30 14:35:57,999 - production_automation - INFO - ✅ Saved 15 Appartement from Monastir page 2
+2025-06-30 14:35:58,078 - production_automation - INFO - ✅ Extracted 15 properties from monastir_appartement_page1_20250630_143556.html
+2025-06-30 14:35:58,156 - production_automation - INFO - ✅ Extracted 15 properties from monastir_appartement_page2_20250630_143557.html
+2025-06-30 14:35:58,156 - production_automation - INFO - ✅ Monastir Appartement: 30 properties found
+2025-06-30 14:35:59,157 - production_automation - INFO - 🏙️ Monastir: 60 total properties
+2025-06-30 14:36:02,086 - production_automation - INFO - 💾 Saved 156 properties to tecnocasa_data\all_properties_daily_extraction_20250630_143602.csv
+2025-06-30 14:36:02,088 - production_automation - INFO - 📸 Saved daily snapshot: daily_snapshots\snapshot_20250630.json
+2025-06-30 14:36:02,089 - production_automation - INFO - 📸 Not enough snapshots for removed article detection
+2025-06-30 14:36:02,090 - production_automation - INFO - 📋 Generated daily report: reports\daily_report_20250630.json
+2025-06-30 14:36:02,090 - production_automation - INFO - 🏁 Automation Complete!
+2025-06-30 14:36:02,090 - production_automation - INFO - ================================================================================
+2025-06-30 14:36:02,090 - production_automation - INFO - 📊 Final Statistics:
+2025-06-30 14:36:02,090 - production_automation - INFO -    Duration: 0:00:25.577375
+2025-06-30 14:36:02,090 - production_automation - INFO -    Cities processed: 3/3
+2025-06-30 14:36:02,090 - production_automation - INFO -    Property types: 2
+2025-06-30 14:36:02,090 - production_automation - INFO -    Pages fetched: 12
+2025-06-30 14:36:02,091 - production_automation - INFO -    Properties found: 156
+2025-06-30 14:36:02,091 - production_automation - INFO -    Properties saved: 0
+2025-06-30 14:36:02,091 - production_automation - INFO -    Properties updated: 156
+2025-06-30 14:36:02,091 - production_automation - INFO -    Properties removed: 0
+2025-06-30 14:36:02,091 - production_automation - INFO -    Errors: 0
+2025-06-30 14:36:02,091 - production_automation - INFO -    Blocked requests: 0
+2025-06-30 14:36:02,091 - production_automation - INFO -    Success rate: 100.0%
+2025-06-30 14:36:02,091 - production_automation - INFO - ================================================================================
+2025-06-30 14:36:02,092 - production_automation - INFO - 📧 Email not configured, skipping email report
