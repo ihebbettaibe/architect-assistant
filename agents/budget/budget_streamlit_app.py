@@ -25,13 +25,8 @@ except ImportError as e:
     st.error(f"Failed to import budget modules: {e}")
     st.stop()
 
-# LangChain agent imports
-try:
-    from langchain_budget_agent import create_langchain_budget_agent, StreamlitCallbackHandler
-    LANGCHAIN_AVAILABLE = True
-except ImportError as e:
-    LANGCHAIN_AVAILABLE = False
-    st.warning(f"LangChain agent not available: {e}")
+# Simplified - only standard agent (LangChain removed for stability)
+LANGCHAIN_AVAILABLE = False
 
 import json
 
@@ -172,8 +167,8 @@ st.markdown("""
 # Main header with gradient background
 st.markdown("""
 <div class="main-header">
-    <h1> Agent Budget Immobilier</h1>
-    <p>Votre assistant intelligent pour analyser et optimiser votre budget de projet immobilier</p>
+    <h1>🚀 Agent Budget Immobilier</h1>
+    <p>Votre assistant intelligent pour l'analyse budgétaire et la recherche de propriétés</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -264,96 +259,14 @@ with st.sidebar:
     # Agent Configuration Section
     st.subheader("🤖 Configuration Agent")
     
-    # Agent type selection
-    agent_type = st.radio(
-        "Type d'agent",
-        options=["Standard", "LangChain + Groq"] if LANGCHAIN_AVAILABLE else ["Standard"],
-        help="Choisissez le type d'agent à utiliser"
-    )
+    # Agent type selection - simplified to standard only
+    st.info("🤖 **Agent Standard Optimisé** - Analyse rapide et fiable")
+    agent_type = "Standard"
     
-    # Groq API configuration for LangChain agent
-    if agent_type == "LangChain + Groq" and LANGCHAIN_AVAILABLE:
-        # Try to load API key from environment first
-        env_groq_key = os.getenv("GROQ_API_KEY")
-        default_model = os.getenv("GROQ_MODEL", "mixtral-8x7b-32768")
-        
-        # Only show API key input if not loaded from environment
-        if env_groq_key:
-            groq_api_key = env_groq_key
-            st.success("✅ Clé API Groq chargée depuis .env")
-        else:
-            groq_api_key = st.text_input(
-                "Clé API Groq",
-                value="",
-                type="password",
-                help="Entrez votre clé API Groq pour utiliser l'agent LangChain"
-            )
-        
-        if groq_api_key:
-            groq_model = st.selectbox(
-                "Modèle Groq",
-                options=["mixtral-8x7b-32768", "llama-3.1-8b-instant", "llama2-70b-4096", "gemma-7b-it"],
-                index=0 if default_model == "mixtral-8x7b-32768" else 
-                      1 if default_model == "llama-3.1-8b-instant" else 0,
-                help="Sélectionnez le modèle Groq à utiliser"
-            )
-            
-            # Show if API key was loaded from environment
-            if env_groq_key and groq_api_key == env_groq_key:
-                # Already shown success message above
-                pass
-            
-            # Initialize LangChain agent
-            if "langchain_agent" not in st.session_state or st.session_state.get("current_groq_key") != groq_api_key:
-                try:
-                    with st.spinner("Initialisation de l'agent LangChain..."):
-                        # Use the same data folder detection logic as the standard agent
-                        possible_paths = [
-                            "../../cleaned_data",  # From agents/budget/ to root/cleaned_data
-                            "cleaned_data",        # If running from root
-                            os.path.join(root_dir, "cleaned_data")  # Using the root directory we set up
-                        ]
-                        
-                        data_folder = None
-                        for path in possible_paths:
-                            if os.path.exists(path):
-                                data_folder = path
-                                break
-                        
-                        st.session_state.langchain_agent = create_langchain_budget_agent(
-                            groq_api_key=groq_api_key,
-                            model_name=groq_model,
-                            data_folder=data_folder,
-                            use_couchdb=True  # Try CouchDB first
-                        )
-                        st.session_state.current_groq_key = groq_api_key
-                        st.session_state.agent_type = "langchain"
-                    st.success("✅ Agent LangChain initialisé!")
-                except Exception as e:
-                    st.error(f"❌ Erreur d'initialisation LangChain: {e}")
-                    st.session_state.agent_type = "standard"
-        else:
-            st.warning("⚠️ Clé API Groq requise pour l'agent LangChain")
-            st.session_state.agent_type = "standard"
-    else:
-        st.session_state.agent_type = "standard"
+    # Standard agent is ready to use
+    st.session_state.agent_type = "standard"
     
     st.divider()
-    
-    # Context Display for LangChain agent
-    if st.session_state.get("agent_type") == "langchain" and "langchain_agent" in st.session_state:
-        st.subheader("🧠 Contexte Agent")
-        context_summary = st.session_state.langchain_agent.get_context_summary()
-        if context_summary != "Aucun contexte défini":
-            st.info(context_summary)
-        else:
-            st.write("*Aucun contexte défini*")
-        
-        if st.button("🔄 Réinitialiser contexte", use_container_width=True):
-            st.session_state.langchain_agent.clear_memory()
-            st.rerun()
-        
-        st.divider()
     
       # Session info
     st.subheader("ℹ️ Statut")
@@ -388,16 +301,20 @@ with st.sidebar:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Handle different entry types (standard vs langchain)
+                # Handle different entry types (standard vs hybrid)
                 if 'result' in entry:
                     # Standard agent entry
                     budget = entry['result']['budget_analysis'].get('extracted_budget', 'Non spécifié')
                     confidence = entry['result'].get('confidence_level', 'low')
                     agent_response = f"Budget: {budget} - Confiance: {confidence}"
                 elif 'response' in entry:
-                    # LangChain agent entry
+                    # Hybrid or LangChain agent entry
                     properties_count = entry.get('properties_count', 0)
-                    agent_response = f"Propriétés trouvées: {properties_count}"
+                    agent_type = entry.get('agent_type', 'langchain')
+                    if agent_type == 'hybrid':
+                        agent_response = f"🚀 Agent Hybride - {properties_count} propriétés analysées"
+                    else:
+                        agent_response = f"Propriétés trouvées: {properties_count}"
                     confidence = 'medium'  # Default for LangChain entries
                 else:
                     # Fallback for unknown entry types
@@ -417,40 +334,213 @@ with st.sidebar:
                 </div>
                 """, unsafe_allow_html=True)
 
-# Main content area with enhanced input section
-st.markdown("""
-<div class="input-container">
-    <h3>💭 Décrivez votre projet immobilier</h3>
-    <p>Soyez aussi précis que possible concernant votre budget, vos préférences et vos contraintes.</p>
-</div>
-""", unsafe_allow_html=True)
+def process_chat_message(user_message: str) -> str:
+    """Process user message and return formatted response"""
+    try:
+        # Use the standard agent to process the message
+        result = st.session_state.agent.process_client_input(user_message)
+        
+        # Format the response in a conversational way
+        response_parts = []
+        
+        # Add budget analysis if available
+        if result.get('budget_analysis'):
+            budget_info = result['budget_analysis']
+            if budget_info.get('extracted_budget'):
+                response_parts.append(f"💰 **Budget détecté:** {budget_info['extracted_budget']:,} DT")
+            
+            if budget_info.get('budget_flexibility'):
+                response_parts.append(f"📋 **Flexibilité:** {budget_info['budget_flexibility']}")
+        
+        # Add recommendations if available
+        if result.get('suggestions'):
+            response_parts.append("💡 **Mes recommandations:**")
+            for suggestion in result['suggestions'][:3]:  # Show top 3
+                response_parts.append(f"• {suggestion}")
+        
+        # Add questions if available
+        if result.get('targeted_questions'):
+            response_parts.append("❓ **Questions pour mieux vous aider:**")
+            for question in result['targeted_questions'][:2]:  # Show top 2
+                response_parts.append(f"• {question}")
+        
+        # Add reliability info
+        if result.get('reliability_score') is not None:
+            confidence = result['reliability_score']
+            if confidence >= 0.8:
+                response_parts.append("✅ **Confiance:** Élevée - Informations suffisantes")
+            elif confidence >= 0.6:
+                response_parts.append("⚠️ **Confiance:** Moyenne - Plus d'infos seraient utiles")
+            else:
+                response_parts.append("❗ **Confiance:** Faible - J'ai besoin de plus de détails")
+        
+        # If no specific analysis, provide general response
+        if not response_parts:
+            response_parts.append("J'ai bien reçu votre message. Pouvez-vous me donner plus de détails sur votre projet immobilier ? Par exemple, votre budget approximatif, la ville qui vous intéresse, ou le type de propriété recherché ?")
+        
+        return "\n\n".join(response_parts)
+        
+    except Exception as e:
+        return f"❌ Je rencontre quelques difficultés techniques. Pouvez-vous reformuler votre question ? Cela m'aiderait beaucoup ! 😊"
 
-# Enhanced input area with examples
-examples = [
-    "Je souhaite construire une villa avec un budget de 350 000 DT à Tunis",
-    "Mon budget est flexible entre 250 000 et 400 000 DT pour un terrain constructible",
-    "Je cherche un appartement à rénover avec un budget total de 180 000 DT",
-    "Quel budget prévoir pour une maison de 200 m² à La Marsa?"
-]
+# Initialize conversation state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+    # Add welcome message
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": "👋 Bonjour ! Je suis votre assistant immobilier. Je peux vous aider à analyser votre budget, rechercher des propriétés et vous donner des conseils personnalisés. Comment puis-je vous aider aujourd'hui ?",
+        "timestamp": datetime.now().isoformat()
+    })
 
-with st.expander("💡 Exemples de questions", expanded=False):
-    for example in examples:
-        if st.button(f"📝 {example}", key=f"example_{hash(example)}"):
-            st.session_state.example_selected = example
+# Chat-style conversation display
+st.markdown("### 💬 Conversation")
 
-# Main input with enhanced styling
-user_input = st.text_area(
-    "Votre message:",
-    height=120,
-    placeholder="Décrivez votre projet, votre budget, vos préférences...",
-    value=st.session_state.get('example_selected', ''),
-    key="main_input",
-    help="Plus vous êtes précis, plus l'analyse sera pertinente"
-)
+# Display chat messages
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        # User message (right-aligned, blue)
+        st.markdown(f"""
+        <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        color: white; padding: 10px 15px; border-radius: 18px 18px 5px 18px; 
+                        max-width: 70%; margin-left: 30%;">
+                <strong>Vous:</strong><br>
+                {message['content']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Assistant message (left-aligned, gray)
+        st.markdown(f"""
+        <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
+            <div style="background: #f0f2f6; color: #262730; padding: 10px 15px; 
+                        border-radius: 18px 18px 18px 5px; max-width: 70%; margin-right: 30%;">
+                <strong>🤖 Assistant Budget:</strong><br>
+                {message['content']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-# Clear selected example after use
-if 'example_selected' in st.session_state:
-    del st.session_state.example_selected
+# Chat input at the bottom
+st.markdown("---")
+col1, col2 = st.columns([6, 1])
+
+with col1:
+    user_input = st.text_input(
+        "Tapez votre message...",
+        placeholder="Ex: J'ai un budget de 300000 DT pour acheter un terrain à Sousse",
+        key="chat_input",
+        label_visibility="collapsed"
+    )
+
+with col2:
+    send_button = st.button("📤", help="Envoyer le message", use_container_width=True)
+
+# Handle message sending
+if send_button and user_input.strip():
+    # Add user message
+    st.session_state.messages.append({
+        "role": "user", 
+        "content": user_input,
+        "timestamp": datetime.now().isoformat()
+    })
+    
+    # Process with agent
+    with st.spinner("🤖 L'assistant réfléchit..."):
+        try:
+            response = process_chat_message(user_input)
+            # Add assistant response
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": response,
+                "timestamp": datetime.now().isoformat()
+            })
+        except Exception as e:
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": f"❌ Désolé, j'ai rencontré une erreur. Pouvez-vous reformuler votre question ? Erreur: {str(e)}",
+                "timestamp": datetime.now().isoformat()
+            })
+    
+    # Clear input and rerun
+    st.rerun()
+
+# Quick action buttons
+st.markdown("### 🚀 Actions Rapides")
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("💰 Analyser Budget", use_container_width=True):
+        quick_message = "Je voudrais analyser mon budget pour un projet immobilier"
+        st.session_state.messages.append({"role": "user", "content": quick_message, "timestamp": datetime.now().isoformat()})
+        st.rerun()
+
+with col2:
+    if st.button("🏠 Chercher Propriétés", use_container_width=True):
+        quick_message = "Je cherche des propriétés disponibles dans ma gamme de prix"
+        st.session_state.messages.append({"role": "user", "content": quick_message, "timestamp": datetime.now().isoformat()})
+        st.rerun()
+
+with col3:
+    if st.button("📊 Tendances Marché", use_container_width=True):
+        quick_message = "Quelles sont les tendances actuelles du marché immobilier ?"
+        st.session_state.messages.append({"role": "user", "content": quick_message, "timestamp": datetime.now().isoformat()})
+        st.rerun()
+
+# Clear conversation button
+if st.button("🗑️ Nouvelle Conversation", help="Effacer la conversation actuelle"):
+    st.session_state.messages = [st.session_state.messages[0]]  # Keep welcome message
+    st.rerun()
+
+def process_chat_message(user_message: str) -> str:
+    """Process user message and return formatted response"""
+    try:
+        # Use the standard agent to process the message
+        result = st.session_state.agent.process_client_input(user_message)
+        
+        # Format the response in a conversational way
+        response_parts = []
+        
+        # Add budget analysis if available
+        if result.get('budget_analysis'):
+            budget_info = result['budget_analysis']
+            if budget_info.get('extracted_budget'):
+                response_parts.append(f"💰 **Budget détecté:** {budget_info['extracted_budget']:,} DT")
+            
+            if budget_info.get('budget_flexibility'):
+                response_parts.append(f"📋 **Flexibilité:** {budget_info['budget_flexibility']}")
+        
+        # Add recommendations if available
+        if result.get('suggestions'):
+            response_parts.append("💡 **Mes recommandations:**")
+            for suggestion in result['suggestions'][:3]:  # Show top 3
+                response_parts.append(f"• {suggestion}")
+        
+        # Add questions if available
+        if result.get('targeted_questions'):
+            response_parts.append("❓ **Questions pour mieux vous aider:**")
+            for question in result['targeted_questions'][:2]:  # Show top 2
+                response_parts.append(f"• {question}")
+        
+        # Add reliability info
+        if result.get('reliability_score') is not None:
+            confidence = result['reliability_score']
+            if confidence >= 0.8:
+                response_parts.append("✅ **Confiance:** Élevée - Informations suffisantes")
+            elif confidence >= 0.6:
+                response_parts.append("⚠️ **Confiance:** Moyenne - Plus d'infos seraient utiles")
+            else:
+                response_parts.append("❗ **Confiance:** Faible - J'ai besoin de plus de détails")
+        
+        # If no specific analysis, provide general response
+        if not response_parts:
+            response_parts.append("J'ai bien reçu votre message. Pouvez-vous me donner plus de détails sur votre projet immobilier ? Par exemple, votre budget approximatif, la ville qui vous intéresse, ou le type de propriété recherché ?")
+        
+        return "\n\n".join(response_parts)
+        
+    except Exception as e:
+        return f"❌ Je rencontre quelques difficultés techniques. Pouvez-vous reformuler votre question ? Cela m'aiderait beaucoup ! 😊"
 
 # Enhanced auto-execution function
 def execute_next_steps_enhanced(result, context, user_input=""):
@@ -743,94 +833,11 @@ def use_standard_agent(user_input):
         with st.expander("🐛 Détails de l'erreur", expanded=False):
             st.exception(e)
 
-# Main conversation handling with agent type selection
+# Main conversation handling - simplified to standard agent only
 if st.button("🚀 Analyser", type="primary", use_container_width=True):
     if user_input.strip():
-        # Check which agent type to use
-        if st.session_state.get("agent_type") == "langchain" and "langchain_agent" in st.session_state:
-            # Use LangChain agent
-            with st.spinner("🤖 Traitement avec l'agent LangChain..."):
-                try:
-                    # Process with LangChain agent without showing internal thoughts
-                    response_data = st.session_state.langchain_agent.chat(
-                        user_input, 
-                        callback_handler=None  # Disable callback to hide thoughts
-                    )
-                    
-                    # Display LangChain response
-                    st.markdown("### 🤖 Réponse de l'Agent LangChain")
-                    
-                    # Main response
-                    st.markdown(f"**💬 Réponse:**")
-                    st.write(response_data["response"])
-                    
-                    # Display found properties if any
-                    if response_data.get("properties"):
-                        st.markdown("**🏠 Propriétés Trouvées:**")
-                        
-                        # Create a more detailed display of properties
-                        properties_df = pd.DataFrame(response_data["properties"][:10])  # Show top 10
-                        
-                        if not properties_df.empty:
-                            # Display as cards
-                            for idx, prop in properties_df.iterrows():
-                                with st.expander(f"🏠 Propriété {idx + 1} - {prop.get('ville', 'N/A')}", expanded=False):
-                                    col1, col2 = st.columns([2, 1])
-                                    with col1:
-                                        st.write(f"**Prix:** {prop.get('prix', 'N/A')} TND")
-                                        st.write(f"**Surface:** {prop.get('surface', 'N/A')} m²")
-                                     
-                                     
-                                    with col2:
-                                        score = prop.get('budget_fit_score', 0)
-                                        st.metric("Score Budget", f"{score:.1f}/10")
-                                        if prop.get('URL'):
-                                            st.markdown(f"[Voir l'annonce]({prop['URL']})")
-                            
-                            # Properties visualization
-                            if len(properties_df) > 3:
-                                st.markdown("**📊 Visualisation des Prix:**")
-                                fig = px.scatter(
-                                    properties_df, 
-                                    x='surface', 
-                                    y='prix',
-                                    color='ville',
-                                    size='budget_fit_score',
-                                    hover_data=['type', 'chambres'],
-                                    title="Prix vs Surface des Propriétés Trouvées"
-                                )
-                                st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Show context summary
-                    context_summary = st.session_state.langchain_agent.get_context_summary()
-                    if context_summary != "Aucun contexte défini":
-                        st.info(f"📋 **Contexte:** {context_summary}")
-                    
-                    # Add to conversation history
-                    conversation_entry = {
-                        'input': user_input,
-                        'response': response_data["response"],
-                        'agent_type': 'langchain',
-                        'timestamp': datetime.now().isoformat(),
-                        'properties_count': len(response_data.get("properties", [])),
-                        'context': response_data.get("context", {})
-                    }
-                    st.session_state.conversation_history.append(conversation_entry)
-                    
-                    # Handle any errors (but don't show technical details to users)
-                    if "error" in response_data:
-                        # Only show user-friendly messages, not technical errors
-                        if not response_data["response"] or "erreur" in response_data["response"].lower():
-                            st.info("💡 Si vous rencontrez des difficultés, essayez de reformuler votre question ou utilisez l'agent standard.")
-                    
-                except Exception as e:
-                    st.error("❌ Service temporairement indisponible.")
-                    st.info("🔄 Basculement vers l'agent standard...")
-                    # Fall back to standard agent
-                    use_standard_agent(user_input)
-        else:
-            # Use standard agent
-            use_standard_agent(user_input)
+        # Use standard agent only
+        use_standard_agent(user_input)
     else:
         st.warning("⚠️ Veuillez entrer une description de votre projet.")
 
@@ -1031,54 +1038,8 @@ if st.session_state.conversation_history:
     with col2:
         if st.button("💬 Poser la Question", type="secondary", use_container_width=True):
             if follow_up_input.strip():
-                # Check which agent type to use for follow-up
-                if st.session_state.get("agent_type") == "langchain" and "langchain_agent" in st.session_state:
-                    # Use LangChain agent for follow-up
-                    with st.spinner("🤖 Traitement avec l'agent LangChain..."):
-                        try:
-                            # Process follow-up without showing internal thoughts
-                            response_data = st.session_state.langchain_agent.chat(
-                                follow_up_input,
-                                callback_handler=None  # Disable callback to hide thoughts
-                            )
-                            
-                            # Display LangChain response
-                            st.markdown("#### 🤖 Réponse de l'Agent LangChain")
-                            st.write(response_data["response"])
-                            
-                            # Display properties if found
-                            if response_data.get("properties"):
-                                st.markdown("**🏠 Propriétés Trouvées:**")
-                                for idx, prop in enumerate(response_data["properties"][:5], 1):
-                                    with st.expander(f"🏠 Propriété {idx} - {prop.get('ville', 'N/A')}", expanded=False):
-                                        col1, col2 = st.columns([2, 1])
-                                        with col1:
-                                            st.write(f"**Prix:** {prop.get('prix', 'N/A')} TND")
-                                            st.write(f"**Surface:** {prop.get('surface', 'N/A')} m²")
-                                            st.write(f"**Type:** {prop.get('type', 'N/A')}")
-                                        with col2:
-                                            score = prop.get('budget_fit_score', 0)
-                                            st.metric("Score", f"{score:.1f}/10")
-                            
-                            # Add to conversation history
-                            conversation_entry = {
-                                'input': follow_up_input,
-                                'response': response_data["response"],
-                                'agent_type': 'langchain',
-                                'timestamp': datetime.now().isoformat(),
-                                'properties_count': len(response_data.get("properties", [])),
-                                'context': response_data.get("context", {})
-                            }
-                            st.session_state.conversation_history.append(conversation_entry)
-                            
-                        except Exception as e:
-                            st.error("❌ Service temporairement indisponible.")
-                            st.info("🔄 Utilisation de l'agent standard...")
-                            # Fall back to standard agent processing
-                            standard_followup_processing(follow_up_input)
-                else:
-                    # Use standard agent for follow-up
-                    standard_followup_processing(follow_up_input)
+                # Use standard agent only
+                standard_followup_processing(follow_up_input)
             else:
                 st.warning("⚠️ Veuillez entrer votre question.")
 
@@ -1103,29 +1064,40 @@ with quick_col2:
         st.rerun()
 
 # Help and tips section
-with st.expander("💡 Conseils d'Utilisation", expanded=False):
+with st.expander("💡 Guide d'Utilisation - Agent Hybride", expanded=False):
     st.markdown("""
-    #### 🎯 Pour une analyse optimale:
+    #### 🚀 Avantages de l'Agent Hybride:
     
-    **💰 Concernant le budget:**
+    **🧠 Intelligence Fusionnée:**
+    - Conversation naturelle avec LangChain
+    - Analyse prédictive avec l'IA spécialisée
+    - Scoring intelligent des propriétés
+    - Recommandations stratégiques personnalisées
+    
+    **💰 Pour une analyse budgétaire optimale:**
     - Indiquez un montant précis ou une fourchette
     - Précisez si le budget inclut le terrain
     - Mentionnez vos capacités de financement
+    - L'IA extraira automatiquement les informations clés
     
-    **🏠 Concernant le projet:**
+    **🏠 Concernant votre projet:**
     - Type de bien souhaité (villa, appartement, terrain...)
     - Surface approximative ou nombre de pièces
     - Zone géographique préférée
+    - L'agent hybride analysera et scorera automatiquement
     
-    **⚙️ Fonctionnalités avancées:**
-    - Activez l'exécution automatique pour des analyses plus rapides
-    - Utilisez les exemples pour vous inspirer
-    - Consultez l'historique pour suivre l'évolution de votre projet
+    **⚡ Fonctionnalités hybrides avancées:**
+    - Mémoire conversationnelle intelligente
+    - Analyse de marché en temps réel
+    - Scoring de compatibilité budgétaire
+    - Recommandations stratégiques contextuelles
+    - Extraction automatique d'informations
     
-    **🔧 Options techniques:**
-    - Activez les données techniques pour voir les détails JSON
-    - Exportez vos analyses pour les conserver
-    - Utilisez les actions rapides pour naviguer efficacement
+    **🎯 Exemples de questions optimisées:**
+    - "J'ai 250 000 DT pour une villa à Sousse avec jardin"
+    - "Quelles sont mes options avec un budget de 180 000 DT?"
+    - "Compare les propriétés par surface pour mon budget"
+    - "Analyse les tendances du marché à Tunis"
     """)
 
 # Footer with branding and info
