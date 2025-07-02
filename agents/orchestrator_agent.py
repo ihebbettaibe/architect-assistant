@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 # Import specialized agents
 from budget import FullBudgetAgent
-# from style_agent import StyleAgent
+from design_agent import DesignAgent
 # from Project_agent import ProjectAgent
 # from Regulation_agent import RegulationAgent
 # from context_agent import ContextAgent
@@ -37,7 +37,7 @@ class ArchitectureAssistantOrchestrator:
           # Initialize specialized agents
         self.agents = {
             "budget": FullBudgetAgent(data_folder="cleaned_data"),
-            "style": None,  # StyleAgent(),
+            "style": DesignAgent(design_db_path="knowledge_base/design"),
             "project": None,  # ProjectAgent(),
             "regulation": None,  # RegulationAgent(),
             "context": None  # ContextAgent()
