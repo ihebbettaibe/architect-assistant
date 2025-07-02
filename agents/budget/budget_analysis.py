@@ -85,11 +85,19 @@ class BudgetAnalysis:
         # Convert to format expected by rest of the analysis
         property_metadata = []
         for prop in properties:
+            def safe_float(val):
+                if val is None or val == '':
+                    return 0.0
+                try:
+                    return float(val)
+                except Exception:
+                    return 0.0
+
             metadata = {
                 'City': prop.get('city', prop.get('City', '')),
                 'Title': prop.get('title', prop.get('Title', '')),
-                'Price': float(prop.get('price', prop.get('Price', 0))),
-                'Surface': float(prop.get('surface', prop.get('Surface', 0))),
+                'Price': safe_float(prop.get('price', prop.get('Price', 0))),
+                'Surface': safe_float(prop.get('surface', prop.get('Surface', 0))),
                 'Location': prop.get('location', prop.get('Location', '')),
                 'Type': prop.get('type', prop.get('Type', '')),
                 'URL': prop.get('url', prop.get('URL', '')),
@@ -370,7 +378,8 @@ class BudgetAnalysis:
                             "price_negotiation_tips": "negotiation strategies based on market data",
                             "alternative_suggestions": "alternatives if budget is challenging",
                             "market_trends": "insights about the local market",
-                            "risk_assessment": "potential risks and considerations"
+                            "risk_assessment": "potential risks and considerations",
+                            "targeted_questions": ["list of 4 follow-up questions to ask the client to improve advice"]
                         }}
                         """
                     },

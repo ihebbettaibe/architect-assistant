@@ -84,31 +84,108 @@ class ClientInterface:
             return {"budget": None, "flexibility": "unknown"}
     
     def _generate_targeted_questions(self, budget_info: Dict[str, Any], context: Dict[str, Any] = None) -> List[str]:
-        """Generate targeted questions to refine budget understanding"""
-        questions = []
-        
-        if not budget_info.get("budget") and not budget_info.get("budget_range"):
-            questions.append("Avez-vous une idée du budget que vous souhaitez consacrer à ce projet ?")
-            questions.append("Quel montant maximum seriez-vous prêt(e) à investir ?")
-        
-        if budget_info.get("financing") == "unknown":
-            questions.append("Avez-vous déjà une solution de financement (fonds propres, crédit, mixte) ?")
-        
-        if budget_info.get("flexibility") == "unknown":
-            questions.append("Votre budget est-il strict ou avez-vous une marge de manœuvre ?")
-        
-        if budget_info.get("timeline") == "unknown":
-            questions.append("Quel est votre délai souhaité pour la réalisation du projet ?")
-        
-        # Add contextual questions based on project type
-        if context and context.get("project_type"):
-            project_type = context["project_type"]
-            if project_type == "construction":
-                questions.append("Avez-vous déjà le terrain ou est-il inclus dans le budget ?")
-            elif project_type == "renovation":
-                questions.append("Quel pourcentage du budget souhaitez-vous allouer aux gros œuvre vs finitions ?")
-        
-        return questions[:3]  # Return max 3 most relevant questions
+        """Generate targeted questions that are fully personalized based on conversation context"""
+        try:
+            # Get conversation context from session state if available
+            conversation_context = []
+            import streamlit as st
+            if hasattr(st, "session_state") and "conversation_context" in st.session_state:
+                conversation_context = st.session_state.conversation_context
+            
+            # Extract information from budget_info
+            budget = budget_info.get("budget")
+            budget_range = budget_info.get("budget_range")
+            flexibility = budget_info.get("flexibility")
+            financing = budget_info.get("financing")
+            
+            # Generate a customized prompt based on gathered information
+            context_prompt = "L'utilisateur"
+            
+            if budget:
+                context_prompt += f" a mentionné un budget de {budget} DT"
+            elif budget_range:
+                context_prompt += f" a mentionné un budget entre {budget_range[0]} et {budget_range[1]} DT"
+            else:
+                context_prompt += " n'a pas précisé de budget clair"
+                
+            if flexibility and flexibility != "unknown":
+                context_prompt += f" avec une {flexibility} flexibilité"
+                
+            if financing and financing != "unknown":
+                context_prompt += f" et un financement par {financing}"
+            
+            # Try to use the LLM to generate personalized follow-up questions
+            response = self.client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system", 
+                        "content": """Vous êtes un spécialiste immobilier qui analyse les conversations et suggère des questions de suivi très personnalisées.
+                        Générez exactement 4 questions de suivi personnalisées en français, basées sur les derniers échanges de la conversation.
+                        Les questions doivent:
+                        1. Être formulées comme des questions directes que l'utilisateur pourrait sélectionner et poser
+                        2. Être spécifiques au contexte de la conversation immobilière
+                        3. Porter principalement sur les terrains constructibles en Tunisie
+                        4. Aider à affiner la recherche immobilière ou mieux comprendre les besoins
+                        5. Ne pas répéter des informations déjà données
+                        
+                        Répondez uniquement avec les 4 questions, une par ligne, sans numérotation ni autre texte."""
+                    }
+                ] + [msg for msg in conversation_context[-5:] if isinstance(msg, dict)],
+                model="llama3-8b-8192",
+                temperature=0.7,
+                max_tokens=256
+            )
+            
+            # Extract questions from response
+            custom_questions = response.choices[0].message.content.strip().split("\n")
+            
+            # Clean up questions - remove any numbering or bullet points
+            clean_questions = []
+            for q in custom_questions:
+                q = q.strip()
+                # Remove leading numbers, dashes, asterisks, etc.
+                q = q.lstrip("0123456789.- •*")
+                q = q.strip()
+                if q and len(q) > 10:  # Ensure it's a real question with decent length
+                    clean_questions.append(q)
+            
+            # Ensure we have exactly 4 questions
+            while len(clean_questions) < 4:
+                # Fallback questions based on what we know
+                fallbacks = []
+                
+                if not budget and not budget_range:
+                    fallbacks.append("Quel budget envisagez-vous pour votre projet immobilier ?")
+                elif budget:
+                    fallbacks.append(f"Seriez-vous prêt à ajuster votre budget de {budget} DT si nécessaire ?")
+                
+                # Location questions
+                fallbacks.append("Quelles zones géographiques vous intéressent particulièrement ?")
+                fallbacks.append("Préférez-vous un terrain proche du centre-ville ou dans une zone périphérique ?")
+                
+                # Project questions
+                fallbacks.append("Avez-vous des exigences particulières concernant la forme ou la topographie du terrain ?")
+                fallbacks.append("Quelles sont vos priorités: proximité des services, vue, accessibilité ?")
+                fallbacks.append("Avez-vous déjà un projet architectural en tête pour ce terrain ?")
+                
+                # Add unique fallback questions until we have 4
+                for q in fallbacks:
+                    if q not in clean_questions:
+                        clean_questions.append(q)
+                        if len(clean_questions) >= 4:
+                            break
+            
+            return clean_questions[:4]  # Return exactly 4 questions
+            
+        except Exception as e:
+            # Fallback questions if API call fails
+            print(f"Error generating custom questions: {e}")
+            return [
+                "Pouvez-vous préciser davantage votre budget pour ce projet immobilier ?",
+                "Quelle ville ou région vous intéresse particulièrement ?",
+                "Quelle superficie minimale recherchez-vous pour votre terrain ?",
+                "Avez-vous des contraintes particulières pour votre projet immobilier ?"
+            ]
     
     def _detect_budget_inconsistencies(self, budget_info: Dict[str, Any], context: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Detect potential inconsistencies in budget information"""
