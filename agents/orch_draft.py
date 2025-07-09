@@ -11,15 +11,223 @@ class RealEstateState(TypedDict):
     recommendations: List[Dict[str, Any]]
     current_step: str
     consultation_complete: bool
+    # New fields for agent workflow
+    style_output: Dict[str, Any]
+    budget_output: Dict[str, Any]
+    regulation_output: Dict[str, Any]
+    final_output: Dict[str, Any]
+    needs_revision: bool
+    loop_count: int
+    max_loops: int
 
 class RealEstateOrchestraAgent:
     """
     LangGraph-based Orchestra Agent for Real Estate Development in Tunisia
-    Implements the decision tree workflow using LangGraph nodes and edges
+    Implements both the original decision tree workflow and new 5-agent workflow
     """
     
-    def __init__(self):
+    def __init__(self, max_loops: int = 3):
+        self.max_loops = max_loops
         self.graph = self._build_graph()
+        self.agent_graph = self._build_agent_workflow()
+    
+    def _build_agent_workflow(self) -> StateGraph:
+        """Build the 5-agent workflow with loop logic"""
+        workflow = StateGraph(RealEstateState)
+        
+        # Add agent nodes
+        workflow.add_node("style_agent", self.style_agent_node)
+        workflow.add_node("budget_agent", self.budget_agent_node)
+        workflow.add_node("regulation_agent", self.regulation_agent_node)
+        workflow.add_node("final_agent", self.final_agent_node)
+        workflow.add_node("orchestrator", self.orchestrator_node)
+        
+        # Set entry point
+        workflow.set_entry_point("orchestrator")
+        
+        # Sequential flow: Style → Budget → Regulation → Final
+        workflow.add_edge("orchestrator", "style_agent")
+        workflow.add_edge("style_agent", "budget_agent")
+        workflow.add_edge("budget_agent", "regulation_agent")
+        workflow.add_edge("regulation_agent", "final_agent")
+        
+        # Conditional edge from final_agent: loop back or end
+        workflow.add_conditional_edges(
+            "final_agent",
+            self._route_final_decision,
+            {
+                "revision_needed": "style_agent",
+                "complete": END
+            }
+        )
+        
+        return workflow.compile()
+    
+    def _route_final_decision(self, state: RealEstateState) -> str:
+        """Route based on final agent decision and loop count"""
+        if state["needs_revision"] and state["loop_count"] < state["max_loops"]:
+            return "revision_needed"
+        return "complete"
+    
+    def orchestrator_node(self, state: RealEstateState) -> RealEstateState:
+        """Initialize the agent workflow"""
+        state["messages"].append(AIMessage(content="🎯 Démarrage du processus de conception architecturale..."))
+        state["style_output"] = {}
+        state["budget_output"] = {}
+        state["regulation_output"] = {}
+        state["final_output"] = {}
+        state["needs_revision"] = False
+        state["loop_count"] = 0
+        state["max_loops"] = self.max_loops
+        return state
+    
+    def style_agent_node(self, state: RealEstateState) -> RealEstateState:
+        """StyleAgent - Handles design preferences and architectural style"""
+        loop_info = f" (Révision #{state['loop_count'] + 1})" if state["loop_count"] > 0 else ""
+        
+        state["messages"].append(AIMessage(content=f"🎨 Style Agent{loop_info} - Analyse des préférences de design..."))
+        
+        # Simulate style analysis based on user data and previous outputs
+        style_analysis = {
+            "architectural_style": "Moderne Méditerranéen",
+            "color_scheme": ["Blanc", "Beige", "Terre cuite"],
+            "materials": ["Pierre naturelle", "Enduit traditionnel", "Céramique"],
+            "layout_preferences": state["user_data"].get("terrain_type", "isole"),
+            "outdoor_spaces": ["Terrasse", "Jardin", "Patio"],
+            "revision_notes": state["final_output"].get("style_feedback", "") if state["loop_count"] > 0 else ""
+        }
+        
+        state["style_output"] = style_analysis
+        state["messages"].append(AIMessage(content=f"✅ Style défini: {style_analysis['architectural_style']}"))
+        return state
+    
+    def budget_agent_node(self, state: RealEstateState) -> RealEstateState:
+        """BudgetAgent - Analyzes costs and budget constraints"""
+        state["messages"].append(AIMessage(content="💰 Budget Agent - Calcul des coûts de construction..."))
+        
+        # Base costs (example values in TND)
+        base_costs = {
+            "gros_oeuvre": 350,  # per m²
+            "finitions": 200,
+            "equipements": 150,
+            "terrain": 100
+        }
+        
+        # Adjust costs based on style preferences
+        style_multiplier = 1.2 if "Premium" in state["style_output"].get("architectural_style", "") else 1.0
+        surface = int(state["user_data"].get("surface", "200"))
+        
+        budget_analysis = {
+            "surface_construction": surface,
+            "cout_m2": sum(base_costs.values()) * style_multiplier,
+            "cout_total": surface * sum(base_costs.values()) * style_multiplier,
+            "breakdown": {k: v * style_multiplier for k, v in base_costs.items()},
+            "financing_options": ["Crédit bancaire", "Autofinancement", "Mixte"],
+            "budget_recommendations": []
+        }
+        
+        # Add budget recommendations based on costs
+        if budget_analysis["cout_total"] > 300000:
+            budget_analysis["budget_recommendations"].append("Considérer des matériaux alternatifs")
+        
+        state["budget_output"] = budget_analysis
+        state["messages"].append(AIMessage(content=f"✅ Budget estimé: {budget_analysis['cout_total']:,.0f} TND"))
+        return state
+    
+    def regulation_agent_node(self, state: RealEstateState) -> RealEstateState:
+        """RegulationAgent - Checks compliance with building regulations"""
+        state["messages"].append(AIMessage(content="📋 Regulation Agent - Vérification des conformités..."))
+        
+        zone_type = state["user_data"].get("zone_type", "constructible")
+        
+        regulation_check = {
+            "zone_classification": zone_type,
+            "building_permits_required": True,
+            "height_restrictions": "R+2 maximum" if zone_type == "constructible" else "R+1",
+            "setback_requirements": {
+                "front": "5m",
+                "sides": "3m", 
+                "rear": "4m"
+            },
+            "coverage_ratio": "60%" if zone_type == "constructible" else "40%",
+            "compliance_status": "Conforme",
+            "required_documents": [
+                "Certificat d'urbanisme",
+                "Étude géotechnique",
+                "Plans architecturaux",
+                "Permis de construire"
+            ],
+            "recommendations": []
+        }
+        
+        # Check for potential issues
+        surface = int(state["user_data"].get("surface", "200"))
+        if surface < 150:
+            regulation_check["recommendations"].append("Surface minimale recommandée: 150m²")
+        
+        state["regulation_output"] = regulation_check
+        state["messages"].append(AIMessage(content=f"✅ Statut: {regulation_check['compliance_status']}"))
+        return state
+    
+    def final_agent_node(self, state: RealEstateState) -> RealEstateState:
+        """FinalAgent - Reviews all outputs and decides if revision is needed"""
+        state["messages"].append(AIMessage(content="🔍 Final Agent - Analyse finale et validation..."))
+        
+        # Increment loop count
+        state["loop_count"] += 1
+        
+        # Analyze all agent outputs for consistency and quality
+        style_data = state["style_output"]
+        budget_data = state["budget_output"]
+        regulation_data = state["regulation_output"]
+        
+        final_analysis = {
+            "overall_score": 0,
+            "consistency_check": True,
+            "budget_feasibility": True,
+            "regulation_compliance": True,
+            "revision_needed": False,
+            "feedback": {},
+            "final_recommendations": []
+        }
+        
+        # Quality checks
+        quality_score = 85  # Base score
+        
+        # Check budget vs style alignment
+        if budget_data["cout_total"] > 400000 and "Moderne" in style_data.get("architectural_style", ""):
+            quality_score -= 10
+            final_analysis["feedback"]["style_feedback"] = "Considérer un style plus économique"
+        
+        # Check regulation compliance
+        if regulation_data["compliance_status"] != "Conforme":
+            quality_score -= 20
+            final_analysis["regulation_compliance"] = False
+        
+        final_analysis["overall_score"] = quality_score
+        
+        # Decide if revision is needed
+        if quality_score < 80 and state["loop_count"] < state["max_loops"]:
+            final_analysis["revision_needed"] = True
+            state["needs_revision"] = True
+            state["messages"].append(AIMessage(content="⚠️ Révision nécessaire - Retour au Style Agent"))
+        else:
+            final_analysis["revision_needed"] = False
+            state["needs_revision"] = False
+            state["consultation_complete"] = True
+            
+            # Generate final recommendations
+            final_analysis["final_recommendations"] = [
+                f"Style architectural: {style_data.get('architectural_style')}",
+                f"Budget total: {budget_data.get('cout_total', 0):,.0f} TND",
+                f"Surface: {budget_data.get('surface_construction', 0)}m²",
+                f"Conformité: {regulation_data.get('compliance_status')}"
+            ]
+            
+            state["messages"].append(AIMessage(content=f"✅ Projet validé (Score: {quality_score}/100)"))
+        
+        state["final_output"] = final_analysis
+        return state
     
     def _build_graph(self) -> StateGraph:
         """Build the LangGraph workflow"""
@@ -418,6 +626,37 @@ La pré-installation vous permet d'ajouter la climatisation plus tard
         
         return state
     
+    def run_agent_workflow(self, user_inputs: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Run the 5-agent workflow with loop logic"""
+        initial_state = {
+            "messages": [],
+            "user_data": user_inputs or {},
+            "recommendations": [],
+            "current_step": "orchestrator",
+            "consultation_complete": False,
+            "style_output": {},
+            "budget_output": {},
+            "regulation_output": {},
+            "final_output": {},
+            "needs_revision": False,
+            "loop_count": 0,
+            "max_loops": self.max_loops
+        }
+        
+        # Execute the agent workflow graph
+        final_state = self.agent_graph.invoke(initial_state)
+        
+        return {
+            "messages": [msg.content for msg in final_state["messages"]],
+            "style_output": final_state["style_output"],
+            "budget_output": final_state["budget_output"],
+            "regulation_output": final_state["regulation_output"],
+            "final_output": final_state["final_output"],
+            "consultation_complete": final_state["consultation_complete"],
+            "loop_count": final_state["loop_count"],
+            "user_data": final_state["user_data"]
+        }
+
     def run_consultation(self, user_inputs: Dict[str, Any] = None) -> Dict[str, Any]:
         """Run the complete consultation workflow"""
         initial_state = {
@@ -441,26 +680,52 @@ La pré-installation vous permet d'ajouter la climatisation plus tard
 # Usage example
 if __name__ == "__main__":
     # Initialize the agent
-    agent = RealEstateOrchestraAgent()
+    agent = RealEstateOrchestraAgent(max_loops=3)
     
-    # Example user data (in practice, this would come from user interactions)
+    # Example user data for the new agent workflow
     sample_user_data = {
         "has_terrain": True,
         "zone_type": "constructible", 
         "lotissement_approved": True,
         "terrain_type": "isole",
-        "surface": "500"
+        "surface": "300",
+        "budget_max": "350000",
+        "style_preference": "moderne"
     }
     
-    # Run consultation
+    print("=== RUNNING 5-AGENT WORKFLOW ===")
+    # Run the new agent workflow
+    agent_result = agent.run_agent_workflow(sample_user_data)
+    
+    # Display agent workflow results
+    print("\n=== AGENT WORKFLOW MESSAGES ===")
+    for message in agent_result["messages"]:
+        print(f"{message}")
+        print("-" * 50)
+    
+    print(f"\n=== FINAL ANALYSIS ===")
+    print(f"Loops executed: {agent_result['loop_count']}")
+    print(f"Consultation complete: {agent_result['consultation_complete']}")
+    
+    if agent_result["final_output"]:
+        final = agent_result["final_output"]
+        print(f"Overall Score: {final.get('overall_score', 0)}/100")
+        print("\nFinal Recommendations:")
+        for rec in final.get('final_recommendations', []):
+            print(f"• {rec}")
+    
+    print("\n" + "="*60)
+    print("=== RUNNING ORIGINAL CONSULTATION WORKFLOW ===")
+    
+    # Run original consultation
     result = agent.run_consultation(sample_user_data)
     
-    # Display results
-    print("=== CONSULTATION RESULTS ===")
+    # Display original results
+    print("\n=== ORIGINAL CONSULTATION MESSAGES ===")
     for message in result["messages"]:
         print(f"\n{message}")
         print("-" * 50)
     
-    print(f"\n=== RECOMMENDATIONS SUMMARY ===")
+    print(f"\n=== ORIGINAL RECOMMENDATIONS SUMMARY ===")
     for rec in result["recommendations"]:
         print(f"• {rec}")

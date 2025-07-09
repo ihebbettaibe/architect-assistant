@@ -20,12 +20,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Import CouchDB provider
-from couchdb_provider import CouchDBProvider
+from .couchdb_provider import CouchDBProvider
+from .budget_analysis import BudgetAnalysis
 
 # Load environment variables
 load_dotenv()
 
-class EnhancedBudgetAgent:
+class EnhancedBudgetAgent(BudgetAnalysis):
     """
     Agent Budget - Specialized AI agent for budget estimation and validation
     
@@ -202,10 +203,48 @@ class EnhancedBudgetAgent:
         df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
         df['Surface'] = pd.to_numeric(df['Surface'], errors='coerce')
         
-        # Remove invalid data
-        df = df.dropna(subset=['Price', 'Surface'])
-        df = df[df['Price'] > 0]
+        # Remove invalid surface data (keep properties even if Price is missing)
+        df = df.dropna(subset=['Surface'])
         df = df[df['Surface'] > 0]
+        
+        # For missing prices, estimate based on average price per m² in the region
+        missing_price_mask = df['Price'].isna() | (df['Price'] <= 0)
+        if missing_price_mask.sum() > 0:
+            print(f"⚠️ Found {missing_price_mask.sum()} properties with missing prices, estimating...")
+            
+            # Get valid properties for price estimation
+            valid_prices = df[~missing_price_mask]
+            
+            if len(valid_prices) > 0:
+                # Calculate average price per m² from valid data
+                avg_price_per_m2 = (valid_prices['Price'] / valid_prices['Surface']).mean()
+                
+                # If no valid price data, use reasonable defaults by city
+                if pd.isna(avg_price_per_m2):
+                    city_defaults = {
+                        'Grand Tunis': 2000,  # 2000 TND/m²
+                        'Tunis': 2000,
+                        'Sousse': 1500,
+                        'Sfax': 1500,
+                        'Monastir': 1400,
+                        'Mahdia': 1200,
+                        'Kairouan': 1000,
+                        'Bizerte': 1300
+                    }
+                    
+                    # Apply city-specific defaults
+                    for city, default_price in city_defaults.items():
+                        city_mask = missing_price_mask & (df['City'].str.contains(city, case=False, na=False))
+                        df.loc[city_mask, 'Price'] = df.loc[city_mask, 'Surface'] * default_price
+                else:
+                    # Use calculated average for missing prices
+                    df.loc[missing_price_mask, 'Price'] = df.loc[missing_price_mask, 'Surface'] * avg_price_per_m2
+            
+            print(f"✅ Estimated prices for {missing_price_mask.sum()} properties")
+        
+        # Now remove any remaining invalid data
+        df = df.dropna(subset=['Price'])
+        df = df[df['Price'] > 0]
         
         # Add calculated fields
         df['price_per_m2'] = df['Price'] / df['Surface']

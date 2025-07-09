@@ -80,13 +80,16 @@ st.markdown("""
 
 # Initialize session state
 if 'design_agent' not in st.session_state:
-    with st.spinner("🎨 Initialisation de l'Agent Design..."):
+    with st.spinner("🎨 Initialisation de l'Agent Design avec LangChain..."):
         try:
             st.session_state.design_agent = DesignAgent()
             st.session_state.initialized = True
+            st.success("✅ Agent Design initialisé avec succès!")
+            st.info("🔧 Fonctionnalités LangChain actives : JSON parsing robuste, gestion mémoire avancée")
         except Exception as e:
             st.error(f"❌ Erreur lors de l'initialisation: {str(e)}")
             st.session_state.initialized = False
+            st.info("💡 Vérifiez que votre clé API GROQ est configurée dans le fichier .env")
 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
@@ -103,6 +106,15 @@ with st.sidebar:
     
     if st.session_state.get('initialized', False):
         st.success("✅ Agent Design Prêt")
+        
+        # Show LangChain status
+        agent = st.session_state.design_agent
+        with st.expander("🔧 Statut LangChain"):
+            st.write(f"**LLM Principal:** {agent.llm.model_name}")
+            st.write(f"**LLM Analyse:** {agent.analysis_llm.model_name}")
+            st.write(f"**Mémoire:** {'✅ Active' if agent.memory else '❌ Désactivée'}")
+            st.write(f"**Templates:** {len(agent.prompt_templates)} disponibles")
+            
     else:
         st.error("❌ Agent Non Initialisé")
     
@@ -131,8 +143,9 @@ with st.sidebar:
     if st.button("🔄 Nouvelle Conversation", help="Effacer l'historique de conversation"):
         st.session_state.conversation_history = []
         st.session_state.design_preferences = {}
-        if hasattr(st.session_state.design_agent, 'memory'):
-            st.session_state.design_agent.memory.clear()
+        if st.session_state.get('design_agent') and hasattr(st.session_state.design_agent, 'clear_memory'):
+            st.session_state.design_agent.clear_memory()
+        st.success("🧹 Conversation réinitialisée!")
         st.rerun()
     
     if st.button("📊 Générer Brief", help="Générer le brief de design final"):
@@ -167,13 +180,19 @@ with col1:
                     </div>
                     <strong>🤖 Agent Design:</strong><br>
                     {msg["content"]}
+                    <br><small>⏱️ Traité en {msg.get('processing_time', 0):.2f}s</small>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 # Show extracted info if available
                 if msg.get("extracted_info"):
-                    with st.expander("🔍 Informations Extraites"):
+                    with st.expander("🔍 Informations Extraites (LangChain)"):
                         st.json(msg["extracted_info"])
+                
+                # Show memory summary if available
+                if msg.get("memory_summary"):
+                    with st.expander("🧠 Résumé Mémoire"):
+                        st.text(msg["memory_summary"][:500] + "..." if len(msg["memory_summary"]) > 500 else msg["memory_summary"])
     
     # Chat input
     if st.session_state.get('initialized', False):
@@ -181,12 +200,18 @@ with col1:
         
         if user_input:
             # Process the message
-            with st.spinner("🤔 L'agent réfléchit..."):
+            with st.spinner("🤔 L'agent réfléchit avec LangChain..."):
                 try:
+                    # Add processing time measurement
+                    import time
+                    start_time = time.time()
+                    
                     response = st.session_state.design_agent.process_message(
                         user_input, 
                         st.session_state.conversation_history
                     )
+                    
+                    processing_time = time.time() - start_time
                     
                     # Add messages to history
                     st.session_state.conversation_history.append({
@@ -198,17 +223,22 @@ with col1:
                         "role": "assistant",
                         "content": response["text"],
                         "stage": response["stage"],
-                        "extracted_info": response.get("extracted_info", {})
+                        "extracted_info": response.get("extracted_info", {}),
+                        "processing_time": processing_time,
+                        "memory_summary": response.get("memory_summary", "")
                     })
                     
                     # Update design preferences if available
                     if response.get("design_preferences"):
                         st.session_state.design_preferences = response["design_preferences"]
                     
+                    # Show success message with timing
+                    st.success(f"✅ Traité en {processing_time:.2f}s")
                     st.rerun()
                     
                 except Exception as e:
                     st.error(f"❌ Erreur lors du traitement: {str(e)}")
+                    st.error("💡 Vérifiez votre connexion et votre clé API GROQ")
 
 with col2:
     st.header("📋 Informations Collectées")
@@ -282,9 +312,32 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #666; font-size: 0.9rem;'>
     🎨 Agent Design - Architecture Assistant | 
-    Système intelligent pour la collecte des préférences de design architectural
+    Système intelligent pour la collecte des préférences de design architectural<br>
+    <strong>Enhanced with LangChain:</strong> JSON parsing robuste • Gestion mémoire avancée • Templates structurés
 </div>
 """, unsafe_allow_html=True)
+
+# Display usage instructions
+with st.expander("📖 Guide d'utilisation"):
+    st.markdown("""
+    ### 🎯 Comment utiliser l'Agent Design:
+    
+    1. **Démarrage**: Décrivez vos goûts et préférences de style
+    2. **Exploration**: L'agent vous guidera à travers différentes options
+    3. **Détails techniques**: Spécifiez vos choix pour les matériaux et équipements
+    4. **Finalisation**: Obtenez un résumé complet de vos préférences
+    
+    ### 💡 Exemples de messages:
+    - "Je veux un style moderne et minimaliste"
+    - "J'hésite entre le marbre et le grès pour le sol"
+    - "Faut-il des faux plafonds partout?"
+    - "Je veux une cuisine équipée et une porte blindée"
+    
+    ### 🔧 Fonctionnalités LangChain:
+    - **JSON parsing robuste**: Extraction fiable des préférences
+    - **Mémoire conversationnelle**: Contexte maintenu sur toute la session
+    - **Templates structurés**: Prompts optimisés pour chaque phase
+    """)
 
 # Example prompts
 if not st.session_state.conversation_history:

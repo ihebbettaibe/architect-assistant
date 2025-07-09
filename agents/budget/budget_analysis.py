@@ -62,19 +62,17 @@ class BudgetAnalysis:
         print("🔍 Using CouchDB direct queries for property search...")
         
         city = client_info.get('city')
-        max_budget = client_info.get('budget') or client_info.get('max_price')
         min_surface = client_info.get('min_size', 0)
         property_type = client_info.get('property_type')
         
-        # Expand budget range for better results
-        search_budget = None
-        if max_budget:
-            search_budget = max_budget * 1.5  # Search up to 150% of budget
+        # REMOVED budget limitation to get broader property range
+        # max_budget = client_info.get('budget') or client_info.get('max_price')
+        # search_budget = max_budget * 1.5 if max_budget else None
         
-        # Query CouchDB directly
+        # Query CouchDB directly without price limitation
         properties = self.couchdb_provider.query_properties(
             city=city,
-            max_price=search_budget,
+            # max_price=search_budget,  # REMOVED - this was limiting results
             min_surface=min_surface,
             property_type=property_type,
             limit=200
@@ -152,10 +150,37 @@ class BudgetAnalysis:
                 unique_properties[unique_key] = prop
         print(f"📊 After deduplication: {len(unique_properties)} unique properties from embeddings")
         
-        # If we have a city filter, add more properties from that city
+        # If we have a city filter, add more properties from that city using flexible matching
         if client_info.get('city'):
-            city_properties = [p for p in self.property_metadata 
-                             if p.get('City', '').lower() == client_info['city'].lower()]
+            client_city = client_info['city'].lower().strip()
+            
+            # Handle city mappings (e.g., "Tunis" should match "Grand Tunis")
+            city_mappings = {
+                'tunis': ['grand tunis', 'tunis'],
+                'grand tunis': ['grand tunis', 'tunis'],
+                'ariana': ['ariana', 'grand tunis'],
+                'ben arous': ['ben arous', 'grand tunis']
+            }
+            
+            # Get possible matches for the client city
+            possible_cities = city_mappings.get(client_city, [client_city])
+            
+            city_properties = []
+            for prop in self.property_metadata:
+                prop_city = prop.get('City', '').lower().strip()
+                prop_location = prop.get('Location', '').lower().strip()
+                
+                # Check if any of the possible cities match
+                city_found = False
+                for possible_city in possible_cities:
+                    if (possible_city in prop_city or 
+                        possible_city in prop_location or
+                        prop_city == possible_city):
+                        city_found = True
+                        break
+                
+                if city_found:
+                    city_properties.append(prop)
             # print(f"🏙️ Direct city search found {len(city_properties)} properties in {client_info['city']}")
               # Add unique city properties
             existing_keys = set(unique_properties.keys())
@@ -171,9 +196,12 @@ class BudgetAnalysis:
         deduplicated_props = list(unique_properties.values())
           # Add some randomization to ensure variety in results
         import random
-        if len(deduplicated_props) > 10:
+        if len(deduplicated_props) > 20:
             # Keep the most relevant ones but add some randomization
-            deduplicated_props = deduplicated_props[:20] + random.sample(deduplicated_props[20:], min(10, len(deduplicated_props) - 20))
+            remaining_props = deduplicated_props[20:]
+            sample_size = min(10, len(remaining_props))
+            if sample_size > 0:
+                deduplicated_props = deduplicated_props[:20] + random.sample(remaining_props, sample_size)
         
         print(f"📊 Final deduplicated properties: {len(deduplicated_props)}")
         
@@ -193,7 +221,7 @@ class BudgetAnalysis:
         print(f"🔧 Filtering {len(properties)} properties with criteria:")
         print(f"   - City: {client_info.get('city', 'Any')}")
         print(f"   - Min Size: {client_info.get('min_size', 'Any')} m²")
-        print(f"   - Max Price: {client_info.get('max_price', 'Any')} DT")
+        print(f"   - Max Price: DISABLED (showing all price ranges)")
         print(f"   - Property Type: {client_info.get('property_type', 'Any')}")
         
         city_matches = 0
@@ -204,16 +232,31 @@ class BudgetAnalysis:
         for prop in properties:
             include_property = True
             
-            # City filter - use contains match for more flexible city matching
+            # City filter - use flexible city matching with mappings
             if client_info.get('city'):
                 client_city = client_info['city'].lower().strip()
                 prop_city = prop.get('City', '').lower().strip()
                 prop_location = prop.get('Location', '').lower().strip()
                 
-                # Check if the client city is contained in either the city or location field
-                city_found = (client_city in prop_city or 
-                             client_city in prop_location or
-                             prop_city == client_city)
+                # Handle city mappings (e.g., "Tunis" should match "Grand Tunis")
+                city_mappings = {
+                    'tunis': ['grand tunis', 'tunis'],
+                    'grand tunis': ['grand tunis', 'tunis'],
+                    'ariana': ['ariana', 'grand tunis'],
+                    'ben arous': ['ben arous', 'grand tunis']
+                }
+                
+                # Get possible matches for the client city
+                possible_cities = city_mappings.get(client_city, [client_city])
+                
+                # Check if any of the possible cities match
+                city_found = False
+                for possible_city in possible_cities:
+                    if (possible_city in prop_city or 
+                        possible_city in prop_location or
+                        prop_city == possible_city):
+                        city_found = True
+                        break
                 
                 if not city_found:
                     include_property = False
@@ -227,14 +270,18 @@ class BudgetAnalysis:
                 else:
                     size_matches += 1
             
-            # Price filter - CRITICAL: Apply max_price AND budget constraints
-            max_budget = client_info.get('max_price') or client_info.get('budget')
-            if max_budget and max_budget > 0:
-                prop_price = prop.get('Price', 0)
-                if prop_price > max_budget:
-                    include_property = False
-                else:
-                    price_matches += 1
+            # Price filter - REMOVED to allow broader property range
+            # This was the main limitation preventing higher-priced properties from showing
+            # max_budget = client_info.get('max_price') or client_info.get('budget')
+            # if max_budget and max_budget > 0:
+            #     prop_price = prop.get('Price', 0)
+            #     if prop_price > max_budget:
+            #         include_property = False
+            #     else:
+            #         price_matches += 1
+            
+            # Count all properties as price matches since we removed the filter
+            price_matches += 1
             
             # Property type filter - make it more flexible
             if client_info.get('property_type'):

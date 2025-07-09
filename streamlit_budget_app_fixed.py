@@ -8,12 +8,20 @@ from datetime import datetime
 # Add the agents directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'agents'))
 
-# Import the budget agent
+# Import the simplified LangChain budget agent
 try:
-    from agents.budget import FullBudgetAgent
-except ImportError:
-    st.error("❌ Could not import FullBudgetAgent. Please check the import paths.")
-    st.stop()
+    from agents.budget.langchain_budget_agent import LangChainBudgetAgent
+    from agents.budget.simple_langchain_agent import SimpleLangChainBudgetAgent
+    from agents.budget.minimal_budget_agent import MinimalBudgetAgent
+    from agents.budget.simple_fallback_agent import SimpleFallbackBudgetAgent
+    from agents.budget.standalone_fallback_agent import StandaloneFallbackBudgetAgent
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    LANGCHAIN_AVAILABLE = True
+except ImportError as e:
+    st.warning(f"⚠️ LangChain agent not available: {e}")
+    LANGCHAIN_AVAILABLE = False
 
 # Configure Streamlit page
 st.set_page_config(
@@ -23,43 +31,240 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for ChatGPT-like styling
 st.markdown("""
 <style>
     .main-header {
         font-size: 2.5rem;
-        color: #1f77b4;
+        color: #10a37f;
         text-align: center;
         margin-bottom: 2rem;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(16, 163, 127, 0.1);
     }
-    .chat-message {
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border: 2px solid;
+    
+    /* ChatGPT-like message styling */
+    .chat-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0;
     }
+    
     .user-message {
-        background-color: #f0f8ff;
-        border-color: #4169e1;
-        color: #000080;
+        background: #a2d2ff;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 18px;
+        border: 1px solid #bae6fd;
+        margin-left: 50px;
+        position: relative;
     }
+    
+    .user-message::before {
+        content: "🙋‍♂️";
+        position: absolute;
+        left: -35px;
+        top: 15px;
+        font-size: 20px;
+        background: white;
+        border-radius: 50%;
+        padding: 5px;
+        border: 2px solid #0ea5e9;
+    }
+    
     .agent-message {
-        background-color: #f0fff0;
-        border-color: #32cd32;
-        color: #006400;
+        background: linear-gradient(135deg, #10a37f 0%, #0d8f6b 100%);
+        color: white;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 18px;
+        margin-right: 50px;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(16, 163, 127, 0.15);
     }
-    .metrics-container {
-        background-color: #f5f5f5;
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border: 1px solid #ddd;
+    
+    .agent-message::before {
+        content: "🤖";
+        position: absolute;
+        right: -35px;
+        top: 15px;
+        font-size: 20px;
+        background: white;
+        border-radius: 50%;
+        padding: 5px;
+        border: 2px solid #10a37f;
     }
+    
+    .agent-message a {
+        color: #FFE135;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 2px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+    }
+    
+    .agent-message a:hover {
+        color: #FFF;
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: underline;
+    }
+    
+    /* Property card styling */
+    .property-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 12px 0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-left: 4px solid #10a37f;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .property-title {
+        color: #10a37f;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 12px;
+        line-height: 1.3;
+    }
+    
+    .property-price {
+        color: #e53e3e;
+        font-weight: bold;
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+    
+    .property-details {
+        color: #4a5568;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    .property-url {
+        margin-top: 12px;
+    }
+    
+    .property-url a {
+        background: linear-gradient(135deg, #10a37f 0%, #0d8f6b 100%);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(16, 163, 127, 0.3);
+    }
+    
+    .property-url a:hover {
+        background: linear-gradient(135deg, #0d8f6b 0%, #0a7860 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
+    }
+    
+    /* Chat input styling */
     .stTextArea textarea {
+        border-radius: 24px;
+        border: 2px solid #e2e8f0;
+        padding: 16px 20px;
         font-size: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .element-container {
-        margin-bottom: 1rem;
+    
+    .stTextArea textarea:focus {
+        border-color: #10a37f;
+        box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        outline: none;
+    }
+    
+    /* Button styling */
+    .stButton button {
+        background: linear-gradient(135deg, #10a37f 0%, #0d8f6b 100%);
+        color: white;
+        border: none;
+        border-radius: 24px;
+        padding: 12px 32px;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(16, 163, 127, 0.3);
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 163, 127, 0.4);
+        background: linear-gradient(135deg, #0d8f6b 0%, #0a7860 100%);
+    }
+    
+    /* Example button styling */
+    .example-btn {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 12px 20px;
+        margin: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        color: #2d3748;
+        font-weight: 500;
+    }
+    
+    .example-btn:hover {
+        background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+        border-color: #10a37f;
+        color: #234e52;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 163, 127, 0.15);
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    /* Metrics container */
+    .metrics-container {
+        background: linear-gradient(135deg, #10a37f 0%, #0d8f6b 100%);
+        color: white;
+        padding: 24px;
+        border-radius: 20px;
+        margin: 20px 0;
+        box-shadow: 0 6px 20px rgba(16, 163, 127, 0.25);
+    }
+    
+    /* Top properties section */
+    .top-properties {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-radius: 20px;
+        padding: 24px;
+        margin: 24px 0;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+    
+    .top-properties h3 {
+        color: #1a202c;
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        text-align: center;
+        background: linear-gradient(135deg, #10a37f, #0d8f6b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -68,11 +273,94 @@ st.markdown("""
 if 'agent' not in st.session_state:
     with st.spinner("🚀 Initializing Budget Agent..."):
         try:
-            st.session_state.agent = FullBudgetAgent(data_folder="cleaned_data")
-            st.session_state.initialized = True
+            # Get Groq API key from environment
+            groq_api_key = os.getenv('GROQ_API_KEY')
+            groq_model = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')
+            
+            if not groq_api_key:
+                st.warning("⚠️ GROQ_API_KEY not found - using standalone fallback agent")
+            
+            # Set environment variables to avoid PyTorch issues
+            os.environ["TOKENIZERS_PARALLELISM"] = "false"
+            os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+            
+            # Try LangChain agent first if API key is available
+            if groq_api_key and LANGCHAIN_AVAILABLE:
+                try:
+                    print("🔄 Starting LangChain agent initialization...")
+                    st.session_state.agent = LangChainBudgetAgent(
+                        groq_api_key=groq_api_key,
+                        model_name=groq_model,
+                        data_folder="cleaned_data",
+                        use_couchdb=False
+                    )
+                    st.session_state.initialized = True
+                    st.session_state.agent_type = "langchain"
+                    st.success("✅ LangChain agent initialized successfully")
+                    print("✅ LangChain agent initialization completed successfully")
+                    
+                    # Check if LangSmith is enabled
+                    if st.session_state.agent.tracer:
+                        st.info("🔍 LangSmith tracing is enabled! View traces at https://smith.langchain.com/")
+                    
+                except Exception as e:
+                    st.warning(f"⚠️ LangChain agent failed: {str(e)}")
+                    raise e  # Continue to fallback
+            else:
+                raise Exception("No API key or LangChain not available - using fallback")
+            
         except Exception as e:
-            st.error(f"❌ Failed to initialize agent: {str(e)}")
-            st.session_state.initialized = False
+            # Try fallback to minimal agent
+            try:
+                st.info("🔄 Trying fallback to minimal agent...")
+                st.session_state.agent = MinimalBudgetAgent(
+                    data_folder="cleaned_data",
+                    use_couchdb=False
+                )
+                st.session_state.initialized = True
+                st.session_state.agent_type = "minimal"
+                st.success("✅ Minimal agent initialized successfully (fallback mode)")
+                
+            except Exception as fallback_error:
+                st.warning(f"⚠️ Minimal agent also failed: {fallback_error}")
+                
+                # Try simple fallback agent
+                try:
+                    st.info("🔄 Trying simple fallback agent...")
+                    st.session_state.agent = SimpleFallbackBudgetAgent(
+                        data_folder="cleaned_data"
+                    )
+                    st.session_state.initialized = True
+                    st.session_state.agent_type = "fallback"
+                    st.success("✅ Simple fallback agent initialized successfully")
+                    
+                except Exception as simple_error:
+                    st.warning(f"⚠️ Simple fallback agent failed: {simple_error}")
+                    
+                    # Try standalone fallback agent (final fallback)
+                    try:
+                        st.info("🔄 Trying standalone fallback agent...")
+                        st.session_state.agent = StandaloneFallbackBudgetAgent(
+                            data_folder="cleaned_data"
+                        )
+                        st.session_state.initialized = True
+                        st.session_state.agent_type = "standalone_fallback"
+                        st.success("✅ Standalone fallback agent initialized successfully")
+                        
+                    except Exception as final_error:
+                        st.error(f"❌ All agents failed. Final error: {final_error}")
+                        
+                        # Provide specific solutions for common errors
+                        error_msg = str(e)
+                        if "meta tensor" in error_msg.lower():
+                            st.error("🔧 PyTorch meta tensor error detected. Try:")
+                            st.code("pip uninstall torch torchvision torchaudio transformers -y")
+                            st.code("pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu")
+                            st.code("pip install transformers")
+                        elif "groq" in error_msg.lower():
+                            st.error("🔧 Groq API error. Check your GROQ_API_KEY in .env file")
+                        
+                        st.session_state.initialized = False
 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
@@ -88,8 +376,27 @@ with st.sidebar:
     st.header("🤖 Agent Status")
     
     if st.session_state.get('initialized', False):
-        st.success("✅ Budget Agent Ready")
-        st.info(f"📊 Properties Loaded: {len(st.session_state.agent.property_metadata):,}")
+        agent_type = st.session_state.get('agent_type', 'unknown')
+        if agent_type == "langchain":
+            st.success("✅ LangChain Budget Agent Ready")
+        elif agent_type == "minimal":
+            st.success("✅ Minimal Budget Agent Ready (Fallback)")
+        elif agent_type == "fallback":
+            st.success("✅ Simple Fallback Agent Ready")
+        else:
+            st.success("✅ Budget Agent Ready")
+            
+        # Get property count from base agent
+        try:
+            if hasattr(st.session_state.agent, 'base_agent'):
+                prop_count = len(st.session_state.agent.base_agent.property_metadata)
+            elif hasattr(st.session_state.agent, 'property_metadata'):
+                prop_count = len(st.session_state.agent.property_metadata)
+            else:
+                prop_count = len(st.session_state.agent.property_data) if hasattr(st.session_state.agent, 'property_data') else 0
+            st.info(f"📊 Properties Loaded: {prop_count:,}")
+        except:
+            st.info("📊 Properties: Ready to analyze")
     else:
         st.error("❌ Agent Not Initialized")
     
@@ -111,82 +418,255 @@ with st.sidebar:
 if mode == "💬 Chat Mode":
     st.header("💬 Chat with Budget Agent")
     
-    # Display conversation history
+    # Display conversation history with ChatGPT-like styling
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    
     for i, message in enumerate(st.session_state.conversation_history):
         if message['role'] == 'user':
-            st.markdown(f'<div class="chat-message user-message"><strong>👤 You:</strong><br>{message["content"]}</div>', 
-                       unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="user-message">
+                <strong>Vous:</strong><br>
+                {message["content"]}
+            </div>
+            ''', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="chat-message agent-message"><strong>🤖 Budget Agent:</strong><br>{message["content"]}</div>', 
-                       unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="agent-message">
+                <strong>Assistant Immobilier:</strong><br>
+                {message["content"]}
+            </div>
+            ''', unsafe_allow_html=True)
+            
+            # Show top properties if this is a property search response
+            if 'propriétés trouvées' in message["content"].lower() and st.session_state.get('top_properties'):
+                st.markdown('<div class="top-properties">', unsafe_allow_html=True)
+                st.markdown('<h4>🏆 Top 3 Propriétés les Plus Compatibles</h4>', unsafe_allow_html=True)
+                
+                # Get top properties from session state
+                top_properties = st.session_state.get('top_properties', [])
+                
+                for idx, prop in enumerate(top_properties[:3], 1):
+                    compatibility_score = prop.get('compatibility_score', 0.8) * 100
+                    property_card = f'''
+                    <div class="property-card">
+                        <div class="property-title">#{idx} - {prop.get('Title', 'Propriété')} 
+                            <span style="color: #10a37f; font-size: 14px;">({compatibility_score:.0f}% compatible)</span>
+                        </div>
+                        <div class="property-price">{prop.get('Price', 0):,.0f} TND</div>
+                        <div class="property-details">
+                            📍 <strong>Localisation:</strong> {prop.get('Location', 'N/A')}<br>
+                            📐 <strong>Surface:</strong> {prop.get('Surface', 0):.0f} m²<br>
+                            🏠 <strong>Type:</strong> {prop.get('Type', 'N/A')}<br>
+                            💵 <strong>Prix/m²:</strong> {prop.get('price_per_m2', 0):,.0f} TND/m²<br>
+                            💡 <strong>Pourquoi compatible:</strong> {prop.get('why_compatible', 'Propriété recommandée')}
+                        </div>
+                        <div class="property-url">
+                            <a href="{prop.get('URL', '#')}" target="_blank">🔗 Voir les Détails</a>
+                        </div>
+                    </div>
+                    '''
+                    st.markdown(property_card, unsafe_allow_html=True)
+                
+                st.markdown('</div>', unsafe_allow_html=True)
     
-    # Example messages
-    st.subheader("💡 Example Messages")
-    col1, col2, col3 = st.columns(3)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    with col1:
-        if st.button("💰 Budget Question", help="Ask about budget estimation"):
-            example_msg = "Je souhaite acheter une maison avec un budget de 300000 DT à Sousse"
-            st.session_state.conversation_history.append({"role": "user", "content": example_msg})
-            st.rerun()
-    
-    with col2:
-        if st.button("🏠 Property Type", help="Ask about property types"):
-            example_msg = "Quel type de propriété puis-je avoir avec 250000 DT?"
-            st.session_state.conversation_history.append({"role": "user", "content": example_msg})
-            st.rerun()
-    
-    with col3:
-        if st.button("📍 Location Query", help="Ask about locations"):
-            example_msg = "Quelles sont les meilleures zones pour investir à Tunis?"
-            st.session_state.conversation_history.append({"role": "user", "content": example_msg})
-            st.rerun()
-    
-    # Chat input
+    # Chat input with improved styling
     user_input = st.text_area(
-        "💬 Your Message:",
-        placeholder="Ask me about budgets, property prices, market analysis...",
+        "💬 Votre Message:",
+        placeholder="Posez-moi des questions sur les budgets, prix immobiliers, analyses de marché...",
         height=100,
-        key="chat_input"
+        key="chat_input",
+        help="Décrivez votre projet immobilier avec votre budget et la ville souhaitée"
     )
     
-    if st.button("🚀 Send Message", type="primary") and user_input.strip():
+    # Button layout
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        send_button = st.button("🚀 Envoyer le Message", type="primary", key="send_msg")
+    
+    with col2:
+        # Show top 3 properties button (only if we have search results)
+        if st.session_state.get('top_properties'):
+            if st.button("🏆 Top 3 Propriétés", help="Afficher les 3 propriétés les plus compatibles", key="show_top3"):
+                st.session_state.show_top_properties = True
+                st.rerun()
+    
+    # Handle send message
+    if send_button and user_input.strip():
         if st.session_state.get('initialized', False):
             # Add user message
             st.session_state.conversation_history.append({"role": "user", "content": user_input})
             
-            with st.spinner("🤖 Agent is thinking..."):
+            with st.spinner("🤖 L'assistant réfléchit..."):
                 try:
-                    # Process with budget agent
-                    result = st.session_state.agent.process_client_input(user_input)
+                    # Process with different methods based on agent type
+                    if st.session_state.agent_type == "standalone_fallback":
+                        # Use process_query method for standalone agent
+                        result = st.session_state.agent.process_query(user_input)
+                        
+                        # Format response for standalone agent
+                        agent_response = result if isinstance(result, str) else str(result)
+                        
+                        # Try to get search results for property display
+                        try:
+                            search_result = st.session_state.agent.search_properties(user_input, limit=10)
+                            if search_result.get('properties'):
+                                # Convert to format expected by UI
+                                properties = search_result['properties']
+                                top_properties = properties[:3]  # Get top 3
+                                
+                                # Convert to expected format
+                                formatted_props = []
+                                for prop in top_properties:
+                                    formatted_prop = {
+                                        'Title': f"{prop['category']} - {prop['city']}",
+                                        'Price': prop['price'],
+                                        'Location': prop['location'],
+                                        'Surface': prop['surface'],
+                                        'Type': prop['category'],
+                                        'price_per_m2': prop['price_per_m2'],
+                                        'URL': prop.get('link', '#'),
+                                        'compatibility_score': prop.get('score', 0.8),
+                                        'why_compatible': f"Surface {prop['surface']:.0f}m², prix {prop['price']:,.0f} TND"
+                                    }
+                                    formatted_props.append(formatted_prop)
+                                
+                                st.session_state.top_properties = formatted_props
+                                
+                                # Add property count info to response
+                                total_found = search_result.get('total_found', len(properties))
+                                agent_response += f"\n\n📊 **{total_found} propriétés trouvées** correspondant à vos critères."
+                                if formatted_props:
+                                    agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous!**"
+                        except Exception as e:
+                            print(f"Error getting search results for standalone agent: {e}")
                     
-                    # Format agent response
-                    agent_response = f"""
-**Budget Analysis Results:**
-- Budget Extracted: {result['budget_analysis']['extracted_budget']}
-- Reliability Score: {result['reliability_score']:.1%}
-- Confidence Level: {result['confidence_level']}
-
-**Recommendations:** {result['budget_analysis']['budget_range']}
-
-**Next Steps:** {', '.join(result['next_actions'])}
-                    """
-                    
-                    if result['targeted_questions']:
-                        agent_response += f"\n\n**Questions for you:** {result['targeted_questions'][0]}"
-                    
-                    if result['inconsistencies_detected']:
-                        agent_response += f"\n\n**Note:** {len(result['inconsistencies_detected'])} inconsistencies detected in your input."
+                    else:
+                        # Use chat method for LangChain and other agents
+                        if st.session_state.agent_type == "langchain":
+                            # Use LangChain agent's chat method
+                            result = st.session_state.agent.chat(user_input)
+                            
+                            # Format agent response
+                            agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")
+                            
+                            # Get properties from LangChain agent context
+                            if result.get("properties"):
+                                st.session_state.top_properties = result["properties"][:3]  # Top 3
+                                properties_count = len(result["properties"])
+                                agent_response += f"\n\n📊 **{properties_count} propriétés trouvées** correspondant à vos critères."
+                                if st.session_state.top_properties:
+                                    agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous!**"
+                            
+                            # Show LangSmith tracing info if available
+                            if st.session_state.agent.tracer:
+                                agent_response += f"\n\n🔍 **Trace LangSmith:** Cette conversation est tracée pour analyse. Consultez https://smith.langchain.com/"
+                        
+                        else:
+                            # Use chat method for other agents
+                            result = st.session_state.agent.chat(user_input)
+                        
+                        # Format agent response
+                        agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")
+                        
+                        # Show error details if debugging
+                        if "Je rencontre des difficultés techniques" in agent_response and result.get("error"):
+                            st.error(f"Debug - Error details: {result['error']}")
+                        
+                        # Get top properties if available
+                        if result.get("context") and result["context"].get("user_budget") and result["context"].get("preferred_city"):
+                            try:
+                                # Get detailed analysis with properties
+                                client_profile = {
+                                    "budget": result["context"]["user_budget"],
+                                    "city": result["context"]["preferred_city"],
+                                    "preferences": "maison villa terrain",
+                                    "min_size": 100,
+                                    # Remove max_price limitation to get broader property range
+                                    # "max_price": result["context"]["user_budget"]  # REMOVED
+                                }
+                                
+                                # Get analysis from agent (different method for fallback agent)
+                                if st.session_state.agent_type == "fallback":
+                                    analysis = st.session_state.agent.analyze_client_budget(client_profile)
+                                else:
+                                    analysis = st.session_state.agent.base_agent.analyze_client_budget(client_profile)
+                                
+                                if analysis.get('comparable_properties'):
+                                    # Store analysis results in agent context
+                                    st.session_state.agent.context["analysis_results"] = analysis
+                                    
+                                    # Get top 3 most compatible properties
+                                    top_properties = st.session_state.agent.get_top_compatible_properties(3)
+                                    
+                                    if top_properties:
+                                        st.session_state.top_properties = top_properties
+                                        st.session_state.last_search_results = analysis
+                                        
+                                        # Add property count and URL info to response
+                                        properties_count = len(analysis['comparable_properties'])
+                                        agent_response += f"\n\n📊 **{properties_count} propriétés trouvées** correspondant à vos critères."
+                                        agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous avec liens directs!**"
+                            
+                            except Exception as e:
+                                print(f"Error getting top properties: {e}")
+                        
+                        # Add context information
+                        if result.get("context"):
+                            context = result["context"]
+                            if context.get("user_budget"):
+                                agent_response += f"\n\n💰 **Budget détecté:** {context['user_budget']:,} TND"
+                            if context.get("preferred_city"):
+                                agent_response += f"\n📍 **Ville:** {context['preferred_city']}"
                     
                     st.session_state.conversation_history.append({"role": "agent", "content": agent_response})
                     
                 except Exception as e:
-                    error_msg = f"Sorry, I encountered an error: {str(e)}"
+                    error_msg = f"Désolé, j'ai rencontré une erreur: {str(e)}"
                     st.session_state.conversation_history.append({"role": "agent", "content": error_msg})
             
             st.rerun()
         else:
             st.error("❌ Agent not initialized. Please refresh the page.")
+    
+    # Display top 3 properties if requested
+    if st.session_state.get('show_top_properties', False) and st.session_state.get('top_properties'):
+        st.markdown("---")
+        st.markdown('<div class="top-properties">', unsafe_allow_html=True)
+        st.markdown('<h3>🏆 Top 3 Propriétés les Plus Compatibles</h3>', unsafe_allow_html=True)
+        
+        top_properties = st.session_state.get('top_properties', [])
+        
+        for idx, prop in enumerate(top_properties[:3], 1):
+            compatibility_score = prop.get('compatibility_score', 0.8) * 100
+            property_card = f'''
+            <div class="property-card">
+                <div class="property-title">#{idx} - {prop.get('Title', 'Propriété')} 
+                    <span style="color: #10a37f; font-size: 14px;">({compatibility_score:.0f}% compatible)</span>
+                </div>
+                <div class="property-price">{prop.get('Price', 0):,.0f} TND</div>
+                <div class="property-details">
+                    📍 <strong>Localisation:</strong> {prop.get('Location', 'N/A')}<br>
+                    📐 <strong>Surface:</strong> {prop.get('Surface', 0):.0f} m²<br>
+                    🏠 <strong>Type:</strong> {prop.get('Type', 'N/A')}<br>
+                    💵 <strong>Prix/m²:</strong> {prop.get('price_per_m2', 0):,.0f} TND/m²<br>
+                    💡 <strong>Pourquoi compatible:</strong> {prop.get('why_compatible', 'Propriété recommandée')}
+                </div>
+                <div class="property-url">
+                    <a href="{prop.get('URL', '#')}" target="_blank">🔗 Voir les Détails</a>
+                </div>
+            </div>
+            '''
+            st.markdown(property_card, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Button to hide top properties
+        if st.button("❌ Fermer Top 3", key="close_top3"):
+            st.session_state.show_top_properties = False
+            st.rerun()
 
 # Traditional Analysis Mode
 elif mode == "📊 Traditional Analysis":
@@ -245,7 +725,11 @@ elif mode == "📊 Traditional Analysis":
         
         with st.spinner("📊 Analyzing market data..."):
             try:
-                analysis = st.session_state.agent.analyze_client_budget(client_profile)
+                # Use the appropriate agent's analysis method
+                if st.session_state.agent_type == "fallback":
+                    analysis = st.session_state.agent.analyze_client_budget(client_profile)
+                else:
+                    analysis = st.session_state.agent.base_agent.analyze_client_budget(client_profile)
                 st.session_state.analysis_results = analysis
                 
                 # Display results
@@ -307,11 +791,25 @@ elif mode == "📊 Traditional Analysis":
                     
                     # Display the most compatible property with URL
                     if analysis.get('comparable_properties'):
-                        most_compatible = st.session_state.agent.get_most_compatible_property(client_profile, analysis['comparable_properties'])
+                        if st.session_state.agent_type == "fallback":
+                            most_compatible_props = st.session_state.agent.get_top_compatible_properties(1)
+                            most_compatible = most_compatible_props[0] if most_compatible_props else None
+                        else:
+                            most_compatible = st.session_state.agent.base_agent.get_most_compatible_property(client_profile, analysis['comparable_properties'])
+                        
                         if most_compatible:
                             st.subheader("🏆 Most Compatible Property")
                             
-                            prop = most_compatible['property_details']
+                            if st.session_state.agent_type == "fallback":
+                                # For fallback agent, the property is already in the right format
+                                prop = most_compatible
+                                compatibility_score = prop.get('compatibility_score', 0.8)
+                                why_compatible = prop.get('why_compatible', 'Propriété recommandée')
+                            else:
+                                # For other agents, extract from the structure
+                                prop = most_compatible['property_details']
+                                compatibility_score = most_compatible['compatibility_score']
+                                why_compatible = most_compatible['why_compatible']
                             
                             # Create two columns for property details
                             col1, col2 = st.columns(2)
@@ -324,17 +822,17 @@ elif mode == "📊 Traditional Analysis":
                             
                             with col2:
                                 st.write(f"**📍 Location:** {prop['Location']}")
-                                st.write(f"**🏗️ Type:** {prop['Type']}")
-                                st.write(f"**🌟 Compatibility:** {most_compatible['compatibility_score']:.1%}")
+                                st.write(f"**🏗️ Type:** {prop.get('Type', 'N/A')}")
+                                st.write(f"**🌟 Compatibility:** {compatibility_score:.1%}")
                             
                             # Display URL as a clickable link
-                            if prop['URL'] and prop['URL'] != 'No URL available':
+                            if prop.get('URL') and prop['URL'] != 'No URL available':
                                 st.markdown(f"**🔗 View Property:** [Click here to view property details]({prop['URL']})")
                             else:
                                 st.write("**🔗 URL:** Not available")
                             
                             # Display compatibility explanation
-                            st.info(f"**💡 Why this property matches:** {most_compatible['why_compatible']}")
+                            st.info(f"**💡 Why this property matches:** {why_compatible}")
                     
                     # Additional insights in expandable sections
                     if 'price_negotiation_tips' in budget_ai:
@@ -375,4 +873,4 @@ elif mode == "📈 Market Report":
 
 # Footer
 st.markdown("---")
-st.markdown("🏠 **Architecture Budget Assistant** - Powered by AI | 🤖 Enhanced Budget Agent")
+st.markdown("🏠 **Architecture Budget Assistant** - Powered by Simplified LangChain & Groq AI | 🤖 Simplified LangChain Budget Agent")

@@ -4,6 +4,7 @@ langchain>=0.1.0
 langchain-groq>=0.1.0
 langchain-community>=0.0.10
 langchain-huggingface
+langsmith>=0.1.0
 crewai
 python-dotenv
 tiktoken>=0.5.0
