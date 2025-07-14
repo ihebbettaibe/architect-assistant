@@ -1,18 +1,47 @@
 import streamlit as st
 import sys
 import os
-from pathlib import Path
 import json
 import pandas as pd
 from datetime import datetime
+
+# Load environment variables first - BEFORE any other imports
 from dotenv import load_dotenv
-load_dotenv()
 
-# Add the parent directory to Python path
-sys.path.append(str(Path(__file__).parent.parent))
+# Load from .env file explicitly
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(env_path)
 
-# Import the real LangChainBudgetAgent
-from agents.budget.langchain_budget_agent import create_langchain_budget_agent
+# Debug: Show environment variable status
+groq_key = os.getenv('GROQ_API_KEY')
+langsmith_key = os.getenv('LANGSMITH_API_KEY')
+
+print(f"🔧 Environment Debug:")
+print(f"   .env path: {env_path}")
+print(f"   .env exists: {os.path.exists(env_path)}")
+print(f"   GROQ_API_KEY loaded: {'✅' if groq_key else '❌'}")
+print(f"   LANGSMITH_API_KEY loaded: {'✅' if langsmith_key else '❌'}")
+
+# Verify GROQ_API_KEY is loaded
+if not groq_key:
+    st.error("❌ GROQ_API_KEY not found in .env file. Please check your .env configuration.")
+    st.info(f"Looking for .env file at: {env_path}")
+    st.stop()
+
+# Add the agents directory to Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'agents'))
+
+# Import the simplified LangChain budget agent
+try:
+    from agents.budget.langchain_budget_agent import LangChainBudgetAgent
+    from agents.budget.simple_langchain_agent import SimpleLangChainBudgetAgent
+    from agents.budget.minimal_budget_agent import MinimalBudgetAgent
+    from agents.budget.simple_fallback_agent import SimpleFallbackBudgetAgent
+    from agents.budget.standalone_fallback_agent import StandaloneFallbackBudgetAgent
+    LANGCHAIN_AVAILABLE = True
+except ImportError as e:
+    st.warning(f"⚠️ LangChain agent not available: {e}")
+    LANGCHAIN_AVAILABLE = False
 
 # Configure Streamlit page
 st.set_page_config(
@@ -264,18 +293,94 @@ st.markdown("""
 if 'agent' not in st.session_state:
     with st.spinner("🚀 Initializing Budget Agent..."):
         try:
+            # Get Groq API key from environment
             groq_api_key = os.getenv('GROQ_API_KEY')
+            groq_model = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')
+            
             if not groq_api_key:
-                st.error("❌ GROQ_API_KEY not found in environment variables. Please add it to your .env file")
-                st.session_state.initialized = False
+                st.warning("⚠️ GROQ_API_KEY not found - using standalone fallback agent")
+            
+            # Set environment variables to avoid PyTorch issues
+            os.environ["TOKENIZERS_PARALLELISM"] = "false"
+            os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+            
+            # Try LangChain agent first if API key is available
+            if groq_api_key and LANGCHAIN_AVAILABLE:
+                try:
+                    print("🔄 Starting LangChain agent initialization...")
+                    st.session_state.agent = LangChainBudgetAgent(
+                        groq_api_key=groq_api_key,
+                        model_name=groq_model,
+                        data_folder="cleaned_data",
+                        use_couchdb=False
+                    )
+                    st.session_state.initialized = True
+                    st.session_state.agent_type = "langchain"
+                    st.success("✅ LangChain agent initialized successfully")
+                    print("✅ LangChain agent initialization completed successfully")
+                    
+                    # Check if LangSmith is enabled
+                    if st.session_state.agent.tracer:
+                        st.info("🔍 LangSmith tracing is enabled! View traces at https://smith.langchain.com/")
+                    
+                except Exception as e:
+                    st.warning(f"⚠️ LangChain agent failed: {str(e)}")
+                    raise e  # Continue to fallback
             else:
-                st.session_state.agent = create_langchain_budget_agent()
-                st.session_state.agent_type = "langchain"
-                st.session_state.initialized = True
-                st.success("✅ LangChain Budget Agent initialized successfully!")
+                raise Exception("No API key or LangChain not available - using fallback")
+            
         except Exception as e:
-            st.error(f"❌ Failed to initialize LangChain Budget Agent: {str(e)}")
-            st.session_state.initialized = False
+            # Try fallback to minimal agent
+            try:
+                st.info("🔄 Trying fallback to minimal agent...")
+                st.session_state.agent = MinimalBudgetAgent(
+                    data_folder="cleaned_data",
+                    use_couchdb=False
+                )
+                st.session_state.initialized = True
+                st.session_state.agent_type = "minimal"
+                st.success("✅ Minimal agent initialized successfully (fallback mode)")
+                
+            except Exception as fallback_error:
+                st.warning(f"⚠️ Minimal agent also failed: {fallback_error}")
+                
+                # Try simple fallback agent
+                try:
+                    st.info("🔄 Trying simple fallback agent...")
+                    st.session_state.agent = SimpleFallbackBudgetAgent(
+                        data_folder="cleaned_data"
+                    )
+                    st.session_state.initialized = True
+                    st.session_state.agent_type = "fallback"
+                    st.success("✅ Simple fallback agent initialized successfully")
+                    
+                except Exception as simple_error:
+                    st.warning(f"⚠️ Simple fallback agent failed: {simple_error}")
+                    
+                    # Try standalone fallback agent (final fallback)
+                    try:
+                        st.info("🔄 Trying standalone fallback agent...")
+                        st.session_state.agent = StandaloneFallbackBudgetAgent(
+                            data_folder="cleaned_data"
+                        )
+                        st.session_state.initialized = True
+                        st.session_state.agent_type = "standalone_fallback"
+                        st.success("✅ Standalone fallback agent initialized successfully")
+                        
+                    except Exception as final_error:
+                        st.error(f"❌ All agents failed. Final error: {final_error}")
+                        
+                        # Provide specific solutions for common errors
+                        error_msg = str(e)
+                        if "meta tensor" in error_msg.lower():
+                            st.error("🔧 PyTorch meta tensor error detected. Try:")
+                            st.code("pip uninstall torch torchvision torchaudio transformers -y")
+                            st.code("pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu")
+                            st.code("pip install transformers")
+                        elif "groq" in error_msg.lower():
+                            st.error("🔧 Groq API error. Check your GROQ_API_KEY in .env file")
+                        
+                        st.session_state.initialized = False
 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
@@ -303,8 +408,13 @@ with st.sidebar:
             
         # Get property count from base agent
         try:
-            # The SimpleBudgetAgent is removed, so we'll just show a placeholder
-            st.info("📊 Properties: Ready to analyze")
+            if hasattr(st.session_state.agent, 'base_agent'):
+                prop_count = len(st.session_state.agent.base_agent.property_metadata)
+            elif hasattr(st.session_state.agent, 'property_metadata'):
+                prop_count = len(st.session_state.agent.property_metadata)
+            else:
+                prop_count = len(st.session_state.agent.property_data) if hasattr(st.session_state.agent, 'property_data') else 0
+            st.info(f"📊 Properties Loaded: {prop_count:,}")
         except:
             st.info("📊 Properties: Ready to analyze")
     else:
@@ -406,22 +516,116 @@ if mode == "💬 Chat Mode":
     # Handle send message
     if send_button and user_input.strip():
         if st.session_state.get('initialized', False):
+            # Add user message
             st.session_state.conversation_history.append({"role": "user", "content": user_input})
+            
             with st.spinner("🤖 L'assistant réfléchit..."):
                 try:
-                    result = st.session_state.agent.chat(user_input)
-                    agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")
-                    # Add context information if available
-                    if result.get("context"):
-                        context = result["context"]
-                        if context.get("user_budget"):
-                            agent_response += f"\n\n💰 **Budget détecté:** {context['user_budget']:,} TND"
-                        if context.get("preferred_city"):
-                            agent_response += f"\n📍 **Ville:** {context['preferred_city']}"
+                    # Process with different methods based on agent type
+                    if st.session_state.agent_type == "standalone_fallback":
+                        # Use process_query method for standalone agent
+                        result = st.session_state.agent.process_query(user_input)
+                        
+                        # Format response for standalone agent
+                        agent_response = result if isinstance(result, str) else str(result)
+                        
+                        # Try to get search results for property display
+                        try:
+                            search_result = st.session_state.agent.search_properties(user_input, limit=10)
+                            if search_result.get('properties'):
+                                # Convert to format expected by UI
+                                properties = search_result['properties']
+                                top_properties = properties[:3]  # Get top 3
+                                
+                                # Convert to expected format
+                                formatted_props = []
+                                for prop in top_properties:
+                                    formatted_prop = {
+                                        'Title': f"{prop['category']} - {prop['city']}",
+                                        'Price': prop['price'],
+                                        'Location': prop['location'],
+                                        'Surface': prop['surface'],
+                                        'Type': prop['category'],
+                                        'price_per_m2': prop['price_per_m2'],
+                                        'URL': prop.get('link', '#'),
+                                        'compatibility_score': prop.get('score', 0.8),
+                                        'why_compatible': f"Surface {prop['surface']:.0f}m², prix {prop['price']:,.0f} TND"
+                                    }
+                                    formatted_props.append(formatted_prop)
+                                
+                                st.session_state.top_properties = formatted_props
+                                
+                                # Add property count info to response
+                                total_found = search_result.get('total_found', len(properties))
+                                agent_response += f"\n\n📊 **{total_found} propriétés trouvées** correspondant à vos critères."
+                                if formatted_props:
+                                    agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous!**"
+                        except Exception as e:
+                            print(f"Error getting search results for standalone agent: {e}")
+                    
+                    else:
+                        # Use chat method for other agents
+                        result = st.session_state.agent.chat(user_input)
+                        
+                        # Format agent response
+                        agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")
+                        
+                        # Show error details if debugging
+                        if "Je rencontre des difficultés techniques" in agent_response and result.get("error"):
+                            st.error(f"Debug - Error details: {result['error']}")
+                        
+                        # Get top properties if available
+                        if result.get("context") and result["context"].get("user_budget") and result["context"].get("preferred_city"):
+                            try:
+                                # Get detailed analysis with properties
+                                client_profile = {
+                                    "budget": result["context"]["user_budget"],
+                                    "city": result["context"]["preferred_city"],
+                                    "preferences": "maison villa terrain",
+                                    "min_size": 100,
+                                    # Remove max_price limitation to get broader property range
+                                    # "max_price": result["context"]["user_budget"]  # REMOVED
+                                }
+                                
+                                # Get analysis from agent (different method for fallback agent)
+                                if st.session_state.agent_type == "fallback":
+                                    analysis = st.session_state.agent.analyze_client_budget(client_profile)
+                                else:
+                                    analysis = st.session_state.agent.base_agent.analyze_client_budget(client_profile)
+                                
+                                if analysis.get('comparable_properties'):
+                                    # Store analysis results in agent context
+                                    st.session_state.agent.context["analysis_results"] = analysis
+                                    
+                                    # Get top 3 most compatible properties
+                                    top_properties = st.session_state.agent.get_top_compatible_properties(3)
+                                    
+                                    if top_properties:
+                                        st.session_state.top_properties = top_properties
+                                        st.session_state.last_search_results = analysis
+                                        
+                                        # Add property count and URL info to response
+                                        properties_count = len(analysis['comparable_properties'])
+                                        agent_response += f"\n\n📊 **{properties_count} propriétés trouvées** correspondant à vos critères."
+                                        agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous avec liens directs!**"
+                            
+                            except Exception as e:
+                                print(f"Error getting top properties: {e}")
+                        
+                        # Add context information
+                        if result.get("context"):
+                            context = result["context"]
+                            if context.get("user_budget"):
+                                agent_response += f"\n\n💰 **Budget détecté:** {context['user_budget']:,} TND"
+                            if context.get("preferred_city"):
+                                agent_response += f"\n📍 **Ville:** {context['preferred_city']}"
+                    
                     st.session_state.conversation_history.append({"role": "agent", "content": agent_response})
+                    
                 except Exception as e:
                     error_msg = f"Désolé, j'ai rencontré une erreur: {str(e)}"
                     st.session_state.conversation_history.append({"role": "agent", "content": error_msg})
+            
             st.rerun()
         else:
             st.error("❌ Agent not initialized. Please refresh the page.")
@@ -521,27 +725,10 @@ elif mode == "📊 Traditional Analysis":
         with st.spinner("📊 Analyzing market data..."):
             try:
                 # Use the appropriate agent's analysis method
-                # The SimpleBudgetAgent is removed, so we'll just show a placeholder
-                analysis = {
-                    "total_properties_analyzed": 0,
-                    "market_statistics": {
-                        "inventory_count": 0,
-                        "price_stats": {"min": 0, "max": 0, "mean": 0, "median": 0},
-                        "price_per_m2_stats": {"min": 0, "max": 0, "mean": 0, "median": 0},
-                        "surface_stats": {"min": 0, "max": 0, "mean": 0, "median": 0}
-                    },
-                    "budget_analysis": {
-                        "budget_validation": "Budget valide",
-                        "market_position": "Position du marché",
-                        "recommendations": "Recommandations générales",
-                        "confidence_score": 0.95,
-                        "price_negotiation_tips": "Conseils de négociation",
-                        "alternative_suggestions": "Suggestions alternatives",
-                        "market_trends": "Tendances du marché",
-                        "risk_assessment": "Évaluation des risques"
-                    },
-                    "comparable_properties": []
-                }
+                if st.session_state.agent_type == "fallback":
+                    analysis = st.session_state.agent.analyze_client_budget(client_profile)
+                else:
+                    analysis = st.session_state.agent.base_agent.analyze_client_budget(client_profile)
                 st.session_state.analysis_results = analysis
                 
                 # Display results
@@ -603,20 +790,48 @@ elif mode == "📊 Traditional Analysis":
                     
                     # Display the most compatible property with URL
                     if analysis.get('comparable_properties'):
-                        # The SimpleBudgetAgent is removed, so we'll just show a placeholder
-                        most_compatible = None
+                        if st.session_state.agent_type == "fallback":
+                            most_compatible_props = st.session_state.agent.get_top_compatible_properties(1)
+                            most_compatible = most_compatible_props[0] if most_compatible_props else None
+                        else:
+                            most_compatible = st.session_state.agent.base_agent.get_most_compatible_property(client_profile, analysis['comparable_properties'])
+                        
                         if most_compatible:
                             st.subheader("🏆 Most Compatible Property")
                             
-                            # For placeholder, we'll just show a generic message
-                            st.write("**🏆 Most Compatible Property:** Aucune propriété trouvée pour ces critères.")
-                            st.write("**💡 Recommendation:** Veuillez ajuster vos critères de recherche.")
+                            if st.session_state.agent_type == "fallback":
+                                # For fallback agent, the property is already in the right format
+                                prop = most_compatible
+                                compatibility_score = prop.get('compatibility_score', 0.8)
+                                why_compatible = prop.get('why_compatible', 'Propriété recommandée')
+                            else:
+                                # For other agents, extract from the structure
+                                prop = most_compatible['property_details']
+                                compatibility_score = most_compatible['compatibility_score']
+                                why_compatible = most_compatible['why_compatible']
+                            
+                            # Create two columns for property details
+                            col1, col2 = st.columns(2)
+                            
+                            with col1:
+                                st.write(f"**🏠 Title:** {prop['Title']}")
+                                st.write(f"**💰 Price:** {prop['Price']:,.0f} DT")
+                                st.write(f"**📐 Surface:** {prop['Surface']:.0f} m²")
+                                st.write(f"**💵 Price per m²:** {prop['price_per_m2']:,.0f} DT/m²")
+                            
+                            with col2:
+                                st.write(f"**📍 Location:** {prop['Location']}")
+                                st.write(f"**🏗️ Type:** {prop.get('Type', 'N/A')}")
+                                st.write(f"**🌟 Compatibility:** {compatibility_score:.1%}")
                             
                             # Display URL as a clickable link
-                            st.write("**🔗 URL:** Not available")
+                            if prop.get('URL') and prop['URL'] != 'No URL available':
+                                st.markdown(f"**🔗 View Property:** [Click here to view property details]({prop['URL']})")
+                            else:
+                                st.write("**🔗 URL:** Not available")
                             
                             # Display compatibility explanation
-                            st.info(f"**💡 Why this property matches:** Aucune explication disponible.")
+                            st.info(f"**💡 Why this property matches:** {why_compatible}")
                     
                     # Additional insights in expandable sections
                     if 'price_negotiation_tips' in budget_ai:

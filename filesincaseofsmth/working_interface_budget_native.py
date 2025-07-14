@@ -8,9 +8,9 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
 import pandas as pd
-from agents.budget.budget_agent_base import EnhancedBudgetAgent
-from agents.budget.budget_analysis import BudgetAnalysis
-from agents.budget.client_interface import ClientInterface
+from .budget_agent_base import EnhancedBudgetAgent
+from .budget_analysis import BudgetAnalysis
+from .client_interface import ClientInterface
 
 class FullBudgetAgent(EnhancedBudgetAgent, BudgetAnalysis, ClientInterface):
     pass
@@ -822,7 +822,7 @@ if st.session_state.conversation_history:
                                                 
                                                 # Direct link
                                                 if largest_property.get('URL'):
-                                                    st.markdown(f"� **[Voir l'annonce]({largest_property['URL']})**")
+                                                    st.markdown(f"🔗 **[Voir l'annonce]({largest_property['URL']})**")
                                         
                                         # Show top 3 by surface
                                         if len(sorted_by_surface) > 1:
