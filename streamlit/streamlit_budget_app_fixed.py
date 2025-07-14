@@ -544,29 +544,8 @@ if mode == "💬 Chat Mode":
                             print(f"Error getting search results for standalone agent: {e}")
                     
                     else:
-                        # Use chat method for LangChain and other agents
-                        if st.session_state.agent_type == "langchain":
-                            # Use LangChain agent's chat method
-                            result = st.session_state.agent.chat(user_input)
-                            
-                            # Format agent response
-                            agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")
-                            
-                            # Get properties from LangChain agent context
-                            if result.get("properties"):
-                                st.session_state.top_properties = result["properties"][:3]  # Top 3
-                                properties_count = len(result["properties"])
-                                agent_response += f"\n\n📊 **{properties_count} propriétés trouvées** correspondant à vos critères."
-                                if st.session_state.top_properties:
-                                    agent_response += f"\n🏆 **Top 3 propriétés les plus compatibles disponibles ci-dessous!**"
-                            
-                            # Show LangSmith tracing info if available
-                            if st.session_state.agent.tracer:
-                                agent_response += f"\n\n🔍 **Trace LangSmith:** Cette conversation est tracée pour analyse. Consultez https://smith.langchain.com/"
-                        
-                        else:
-                            # Use chat method for other agents
-                            result = st.session_state.agent.chat(user_input)
+                        # Use chat method for other agents
+                        result = st.session_state.agent.chat(user_input)
                         
                         # Format agent response
                         agent_response = result.get("response", "Je n'ai pas pu traiter votre demande.")

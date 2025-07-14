@@ -1,5 +1,5 @@
 """
-LangChain-based Budget Agent using Groq API with LangSmith Integration
+LangChain-based Budget Agent using Groq API
 Integrates with property database and provides conversational real estate budget analysis
 """
 
@@ -19,23 +19,13 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
 from langchain.callbacks.base import BaseCallbackHandler
 
-# LangSmith integration
-try:
-    from langsmith import Client
-    from langchain.callbacks.tracers import LangChainTracer
-    LANGSMITH_AVAILABLE = True
-    print("✅ LangSmith available for tracing")
-except ImportError:
-    LANGSMITH_AVAILABLE = False
-    print("⚠️ LangSmith not available - install with: pip install langsmith")
-
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 # Import existing budget functionality
-from .budget_agent_base import EnhancedBudgetAgent
-from .budget_analysis import BudgetAnalysis
-from .client_interface import ClientInterface
+from budget_agent_base import EnhancedBudgetAgent
+from budget_analysis import BudgetAnalysis
+from client_interface import ClientInterface
 
 class StreamlitCallbackHandler(BaseCallbackHandler):
     """Custom callback handler for Streamlit integration"""
@@ -149,30 +139,6 @@ class LangChainBudgetAgent:
             max_tokens=4000
         )
         
-        # Initialize LangSmith tracing if available
-        self.langsmith_client = None
-        self.tracer = None
-        
-        if LANGSMITH_AVAILABLE:
-            try:
-                # Check for LangSmith API key
-                langsmith_api_key = os.getenv('LANGSMITH_API_KEY')
-                if langsmith_api_key:
-                    # Initialize LangSmith client
-                    self.langsmith_client = Client(api_key=langsmith_api_key)
-                    
-                    # Set up LangSmith environment variables
-                    os.environ["LANGCHAIN_TRACING_V2"] = "true"
-                    os.environ["LANGCHAIN_PROJECT"] = "Budget-Agent-Real-Estate"
-                    
-                    # Create tracer
-                    self.tracer = LangChainTracer(project_name="Budget-Agent-Real-Estate")
-                    print("✅ LangSmith tracing enabled")
-                else:
-                    print("⚠️ LANGSMITH_API_KEY not found in environment")
-            except Exception as e:
-                print(f"⚠️ LangSmith initialization failed: {e}")
-        
         # Initialize memory
         self.memory = ConversationBufferWindowMemory(
             memory_key="chat_history",
@@ -224,26 +190,24 @@ class LangChainBudgetAgent:
                     
                     # Store enhanced properties with all data
                     enhanced_properties = []
-                    default_property_type = "terrain"  # Default property type for search
-                    
                     for prop in properties[:10]:
                         enhanced_prop = {
                             # Preserve all original data with both French and English keys
                             **prop,
                             "prix": prop.get("Price", 0),
                             "ville": prop.get("Location", prop.get("City", city)),
-                            "type": prop.get("Type", default_property_type),
+                            "type": prop.get("Type", property_type),
                             "surface": prop.get("Surface", 0),
                             "chambres": prop.get("Chambres", "N/A"),
-                            "titre": prop.get("Title", f"Propriété {default_property_type}"),
+                            "titre": prop.get("Title", f"Propriété {property_type}"),
                             "localisation": prop.get("Location", prop.get("City", city)),
                             "url": prop.get("URL", ""),
                             "Price": prop.get("Price", 0),
                             "Location": prop.get("Location", prop.get("City", city)),
-                            "Type": prop.get("Type", default_property_type),
+                            "Type": prop.get("Type", property_type),
                             "Surface": prop.get("Surface", 0),
                             "Chambres": prop.get("Chambres", "N/A"),
-                            "Title": prop.get("Title", f"Propriété {default_property_type}"),
+                            "Title": prop.get("Title", f"Propriété {property_type}"),
                             "URL": prop.get("URL", ""),
                             "price_per_m2": prop.get("price_per_m2", prop.get("Price", 0) / max(prop.get("Surface", 1), 1)),
                             "budget_fit_score": self._calculate_budget_fit_score(prop, budget)
@@ -726,24 +690,38 @@ class LangChainBudgetAgent:
         
         # Create prompt template
         prompt = ChatPromptTemplate.from_messages([
-    ("system", """Tu es un expert immobilier en Tunisie. 
+    ("system", """
+Tu es un agent immobilier expert en Tunisie, spécialisé dans l'analyse budgétaire et la recherche de propriétés.
 
-Pour chaque demande:
-1. Identifie budget et ville
-2. Utilise EXACTEMENT UN OUTIL par demande 
-3. Présente résultats clairement
-4. Ne répète JAMAIS le même outil
+Tu combines capacités conversationnelles et outils d'analyse IA.
 
-Règles strictes:
-- Maximum 1 outil par conversation
-- Toujours donner une réponse finale après l'outil
-- Répondre en français professionnel
-- Être concis et actionnable
+Règle clé : utilise TOUJOURS les outils disponibles pour des données réelles. Ne jamais inventer d'infos.
 
-Outils disponibles:
-- search_properties: recherche de propriétés par budget/ville
-- budget_recommendations: conseils budgétaires
-- analyze_trends: tendances marché"""),
+Workflow :
+1. Comprends le contexte (budget, ville, préférences)
+2. Utilise systématiquement search_properties pour les recherches
+3. Analyse les tendances avec analyze_trends
+4. Donne des conseils via budget_recommendations
+5. Traite les questions complexes avec analyze_question
+6. Présente des résultats clairs, structurés et actionnables
+
+Outils :
+- search_properties : recherche et scoring IA
+- analyze_trends : insights marché
+- compare_properties : comparaison multi-critères
+- budget_recommendations : conseils stratégiques
+- property_details : analyse détaillée
+- analyze_question : questions complexes
+
+Comportement :
+- Réponds en français professionnel accessible
+- Base-toi toujours sur les outils pour des données factuelles
+- Combine analyse quantitative et qualitative
+- Adapte selon le client, cache les détails techniques
+- Propose solutions concrètes avec justifications
+
+Présente résultats avec sections claires et métriques, inclut URLs, résume points clés et actions.
+    """),
     MessagesPlaceholder(variable_name="chat_history"),
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad")
@@ -765,8 +743,8 @@ Outils disponibles:
             verbose=False,
             return_intermediate_steps=False,
             handle_parsing_errors=True,
-            max_iterations=2,
-            early_stopping_method="force"
+            max_iterations=5,
+            early_stopping_method="generate"
         )
         
         return agent_executor
@@ -778,12 +756,8 @@ Outils disponibles:
         try:
             print(f"💬 LangChain agent processing: {message}")
             
-            # Prepare callbacks with LangSmith tracing
-            callbacks = []
-            if callback_handler:
-                callbacks.append(callback_handler)
-            if self.tracer:
-                callbacks.append(self.tracer)
+            # Add callback handler if provided
+            callbacks = [callback_handler] if callback_handler else []
             
             # Prepare the complete input with context embedded in the message
             context_info = []
@@ -797,23 +771,10 @@ Outils disponibles:
             # Enhanced message with context
             enhanced_message = f"{message}\n\nContexte actuel: {context_str}"
             
-            # Run the agent with callbacks for tracing
-            config = {"callbacks": callbacks} if callbacks else {}
-            
-            if self.tracer:
-                # Add run metadata for better tracking in LangSmith
-                config["metadata"] = {
-                    "user_budget": self.context.get("user_budget"),
-                    "preferred_city": self.context.get("preferred_city"),
-                    "session_id": datetime.now().strftime("%Y%m%d_%H%M%S"),
-                    "agent_type": "langchain_budget_agent"
-                }
-                config["tags"] = ["budget_analysis", "real_estate", "tunisia"]
-            
             # Run the agent with only the input key (as expected by LangChain)
             response = self.agent_executor.invoke(
                 {"input": enhanced_message},
-                config=config
+                config={"callbacks": callbacks}
             )
             
             return {
