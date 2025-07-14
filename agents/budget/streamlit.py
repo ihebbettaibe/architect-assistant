@@ -1,3 +1,4 @@
+
 import sys
 import os
 import re
@@ -35,6 +36,7 @@ import numpy as np
 try:
     import plotly.express as px
     import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
     PLOTLY_AVAILABLE = True
 except ImportError:
     PLOTLY_AVAILABLE = False
@@ -84,7 +86,7 @@ class SimpleBudgetAgent:
             'Mahdia': ['Centre Ville', 'Hiboun', 'Ksour Essef', 'Chorbane']
         }
         
-        for i in range(100):
+        for i in range(150):  # Increased to 150 properties
             city = np.random.choice(cities)
             neighborhood = np.random.choice(neighborhoods.get(city, ['Centre Ville']))
             prop_type = np.random.choice(property_types)
@@ -124,6 +126,9 @@ class SimpleBudgetAgent:
             # Generate realistic property ID
             prop_id = f"{city[:3].upper()}{prop_type[:2].upper()}{i+1:03d}"
             
+            # Generate quality score based on features
+            quality_score = np.random.randint(3, 6)  # 3-5 stars
+            
             properties.append({
                 'ID': prop_id,
                 'Title': f'{prop_type} {surface}m² à {neighborhood}, {city}',
@@ -137,7 +142,11 @@ class SimpleBudgetAgent:
                 'Description': self._generate_property_description(prop_type, surface, neighborhood, city),
                 'Features': self._generate_property_features(prop_type),
                 'Contact': f'+216 {np.random.randint(20000000, 99999999)}',
-                'Posted_Date': (datetime.now() - pd.Timedelta(days=np.random.randint(1, 90))).strftime('%Y-%m-%d')
+                'Posted_Date': (datetime.now() - pd.Timedelta(days=np.random.randint(1, 90))).strftime('%Y-%m-%d'),
+                'Quality_Score': quality_score,
+                'Agent_Name': f'{np.random.choice(["Ahmed", "Fatma", "Mohamed", "Salma", "Karim", "Amina"])} {np.random.choice(["Ben Ali", "Trabelsi", "Sassi", "Khedira", "Bouazizi"])}',
+                'Views': np.random.randint(50, 500),
+                'Image_URL': f'https://images.unsplash.com/photo-{np.random.randint(1500000000, 1600000000)}-{np.random.randint(100000, 999999)}?w=400&h=300&fit=crop'
             })
         
         return properties
@@ -146,24 +155,24 @@ class SimpleBudgetAgent:
         """Generate realistic property descriptions"""
         descriptions = {
             'Terrain': [
-                f"Excellent terrain de {surface}m² situé dans le quartier prisé de {neighborhood}.",
-                f"Terrain constructible de {surface}m² avec toutes les commodités à proximité.",
-                f"Belle opportunité d'investissement : terrain de {surface}m² bien exposé."
+                f"Excellent terrain de {surface}m² situé dans le quartier prisé de {neighborhood}. Idéal pour construction résidentielle.",
+                f"Terrain constructible de {surface}m² avec toutes les commodités à proximité. Raccordé aux réseaux.",
+                f"Belle opportunité d'investissement : terrain de {surface}m² bien exposé avec vue dégagée."
             ],
             'Villa': [
-                f"Magnifique villa de {surface}m² avec jardin et piscine à {neighborhood}.",
-                f"Villa moderne de {surface}m² entièrement rénovée, quartier calme.",
-                f"Splendide villa de {surface}m² avec vue panoramique sur {city}."
+                f"Magnifique villa de {surface}m² avec jardin et piscine à {neighborhood}. Parfait pour famille nombreuse.",
+                f"Villa moderne de {surface}m² entièrement rénovée, quartier calme et sécurisé.",
+                f"Splendide villa de {surface}m² avec vue panoramique sur {city}. Finitions haut de gamme."
             ],
             'Appartement': [
-                f"Bel appartement de {surface}m² au cœur de {neighborhood}.",
-                f"Appartement moderne de {surface}m² avec balcon et parking.",
-                f"Charmant appartement de {surface}m² proche de toutes commodités."
+                f"Bel appartement de {surface}m² au cœur de {neighborhood}. Proche de tous services.",
+                f"Appartement moderne de {surface}m² avec balcon et parking. État impeccable.",
+                f"Charmant appartement de {surface}m² proche de toutes commodités. Lumineux et bien agencé."
             ],
             'Maison': [
-                f"Maison familiale de {surface}m² avec cour et garage à {neighborhood}.",
-                f"Belle maison de {surface}m² entièrement rénovée.",
-                f"Maison traditionnelle de {surface}m² dans un quartier résidentiel."
+                f"Maison familiale de {surface}m² avec cour et garage à {neighborhood}. Parfaite pour investissement.",
+                f"Belle maison de {surface}m² entièrement rénovée. Cachet authentique préservé.",
+                f"Maison traditionnelle de {surface}m² dans un quartier résidentiel calme."
             ]
         }
         return np.random.choice(descriptions.get(prop_type, ["Propriété à vendre"]))
@@ -173,14 +182,14 @@ class SimpleBudgetAgent:
         common_features = ["Proche écoles", "Transport public", "Commerces à proximité"]
         
         type_features = {
-            'Terrain': ["Constructible", "Raccordé aux réseaux", "Bien exposé"],
-            'Villa': ["Piscine", "Jardin", "Garage", "Terrasse"],
-            'Appartement': ["Ascenseur", "Balcon", "Parking", "Climatisation"],
-            'Maison': ["Cour", "Garage", "Terrasse", "Cave"]
+            'Terrain': ["Constructible", "Raccordé aux réseaux", "Bien exposé", "Titre foncier"],
+            'Villa': ["Piscine", "Jardin", "Garage", "Terrasse", "Sécurisé"],
+            'Appartement': ["Ascenseur", "Balcon", "Parking", "Climatisation", "Concierge"],
+            'Maison': ["Cour", "Garage", "Terrasse", "Cave", "Rénovée"]
         }
         
         features = common_features + type_features.get(prop_type, [])
-        return np.random.choice(features, size=min(4, len(features)), replace=False).tolist()
+        return np.random.choice(features, size=min(5, len(features)), replace=False).tolist()
     
     def update_conversation_memory(self, user_message: str, extracted_info: Dict):
         """Update conversation memory with new information"""
@@ -353,13 +362,13 @@ class SimpleBudgetAgent:
         
         return result
     
-    def search_properties(self, budget: int, city: str = None, property_type: str = None, max_results: int = 8) -> List[Dict]:
+    def search_properties(self, budget: int, city: str = None, property_type: str = None, max_results: int = 12) -> List[Dict]:
         """Enhanced property search with filtering and ranking"""
         filtered_properties = []
         
         for prop in self.sample_properties:
-            # Filter by budget (±25% tolerance)
-            if budget * 0.75 <= prop['Price'] <= budget * 1.25:
+            # Filter by budget (±30% tolerance for more results)
+            if budget * 0.7 <= prop['Price'] <= budget * 1.3:
                 # Filter by city if specified
                 if city is None or prop['City'].lower() == city.lower():
                     # Filter by property type if specified
@@ -367,6 +376,18 @@ class SimpleBudgetAgent:
                         # Calculate match score
                         price_diff = abs(prop['Price'] - budget) / budget
                         match_score = 1 - price_diff
+                        
+                        # Bonus for exact city match
+                        if city and prop['City'].lower() == city.lower():
+                            match_score += 0.2
+                        
+                        # Bonus for exact property type match
+                        if property_type and prop['Type'].lower() == property_type.lower():
+                            match_score += 0.1
+                        
+                        # Bonus for quality score
+                        match_score += (prop['Quality_Score'] - 3) * 0.05
+                        
                         prop['match_score'] = match_score
                         prop['recommendation_reason'] = self._get_recommendation_reason(prop, budget, city)
                         filtered_properties.append(prop)
@@ -389,6 +410,12 @@ class SimpleBudgetAgent:
         elif prop['Price'] < budget:
             reasons.append(f"💰 Économie de {budget - prop['Price']:,} DT")
         
+        # Quality-based recommendations
+        if prop['Quality_Score'] >= 5:
+            reasons.append("⭐ Propriété premium")
+        elif prop['Quality_Score'] >= 4:
+            reasons.append("✨ Très bonne qualité")
+        
         # Surface-based recommendations
         surface_per_dt = prop['Surface'] / prop['Price']
         if surface_per_dt > 0.002:  # Good surface per DT ratio
@@ -398,13 +425,11 @@ class SimpleBudgetAgent:
         if city and prop['City'].lower() == city.lower():
             reasons.append("📍 Dans votre ville préférée")
         
-        # Type-specific reasons
-        if prop['Type'] == 'Villa':
-            reasons.append("🏡 Idéal pour famille")
-        elif prop['Type'] == 'Terrain':
-            reasons.append("🏗️ Parfait pour construction")
-        elif prop['Type'] == 'Appartement':
-            reasons.append("🏢 Prêt à habiter")
+        # Recent posting
+        posted_date = datetime.strptime(prop['Posted_Date'], '%Y-%m-%d')
+        days_ago = (datetime.now() - posted_date).days
+        if days_ago <= 7:
+            reasons.append("🆕 Annonce récente")
         
         return ' • '.join(reasons[:3])  # Max 3 reasons
     
@@ -496,19 +521,22 @@ class SimpleBudgetAgent:
                 suggestions.extend([
                     "Voir plus de propriétés similaires",
                     "Comparer avec d'autres villes",
-                    "Analyser les tendances du marché"
+                    "Analyser les tendances du marché",
+                    "Afficher les statistiques détaillées"
                 ])
             else:
                 suggestions.extend([
                     "Rechercher des propriétés dans ce budget",
                     "Voir les options dans d'autres villes",
-                    "Analyser le marché local"
+                    "Analyser le marché local",
+                    "Comparer les prix par m²"
                 ])
         else:
             suggestions.extend([
                 "Préciser votre budget disponible",
                 "Indiquer votre ville d'intérêt",
-                "Spécifier le type de propriété souhaité"
+                "Spécifier le type de propriété souhaité",
+                "Voir les tendances du marché"
             ])
         
         # Add memory-based suggestions
@@ -518,7 +546,7 @@ class SimpleBudgetAgent:
         if self.conversation_memory['search_history']:
             suggestions.append("Comparer avec vos recherches précédentes")
         
-        return suggestions[:4]  # Limit to 4 suggestions
+        return suggestions[:6]  # Limit to 6 suggestions
 
 # Try to import LangChain agent
 try:
@@ -536,508 +564,269 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for enhanced styling
+# Enhanced Custom CSS for better styling
 st.markdown("""
 <style>
     .main-header {
-        background: linear-gradient(135deg, #2c3e50, #3498db);
-        padding: 2rem;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .main-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
     }
     
     .main-header h1 {
-        font-size: 2.5rem !important;
+        font-size: 3rem !important;
         margin-bottom: 0.5rem !important;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .main-header p {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.1; }
+        50% { transform: scale(1.1); opacity: 0.2; }
     }
     
     .chat-message {
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 0.5rem 0;
-        animation: fadeIn 0.3s ease-in;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 1rem 0;
+        animation: slideIn 0.4s ease-out;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
     .chat-user {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #667eea         0%, #764ba2 100%);
         color: white;
-        margin-left: 2rem;
+        border-left: 5px solid #764ba2;
     }
     
     .chat-agent {
-        background: #f1f3f4;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         color: #333;
-        margin-right: 2rem;
-        border-left: 4px solid #667eea;
+        border-left: 5px solid #667eea;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
     
     .property-card {
-        background: #f8f9fa;
+        background: #fefae0;
+        padding: 1.5rem;
         border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        border-left: 5px solid #007bff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .suggestion-chip {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem;
+        border-radius: 20px;
+        background: #e8f0fe;
+        color: #333;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    
+    .suggestion-chip:hover {
+        background: #667eea;
+        color: white;
+    }
+    
+    .stButton>button {
+        background: #667eea;
+        color: white;
+        border-radius: 10px;
+        padding: 0.5rem 1.5rem;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        background: #764ba2;
+        transform: translateY(-2px);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Main header
-st.markdown("""
-<div class="main-header">
-    <h1>🚀 Agent Budget Immobilier</h1>
-    <p>Votre assistant intelligent pour l'analyse budgétaire et la recherche de propriétés</p>
-</div>
-""", unsafe_allow_html=True)
-
 # Initialize session state
-def initialize_session_state():
-    """Initialize session state variables"""
-    defaults = {
-        "agent": None,
-        "messages": [],
-        "conversation_context": [],
-        "conversation_id": datetime.now().strftime("%Y%m%d_%H%M%S"),
-        "agent_type": "simple"
-    }
-    
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
+if 'agent' not in st.session_state:
+    st.session_state.agent = SimpleBudgetAgent()
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+if 'selected_suggestion' not in st.session_state:
+    st.session_state.selected_suggestion = None
 
-initialize_session_state()
-
-# Initialize agent
-@st.cache_resource
-def initialize_agent():
-    """Initialize the budget agent"""
-    try:
-        # Try LangChain agent first if available
-        if groq_api_key and LANGCHAIN_AVAILABLE:
-            try:
-                print("🔄 Attempting to initialize LangChain Budget Agent...")
-                agent = create_langchain_budget_agent()
-                st.success("✅ LangChain Budget Agent initialized!")
-                return agent, "langchain"
-            except Exception as e:
-                st.warning(f"⚠️ LangChain agent failed: {str(e)}")
-                print(f"LangChain initialization error: {e}")
-        
-        # Fallback to simple agent
-        print("🔄 Initializing Simple Budget Agent...")
-        agent = SimpleBudgetAgent()
-        st.info("✅ Simple Budget Agent initialized!")
-        return agent, "simple"
-        
-    except Exception as e:
-        st.error(f"❌ Failed to initialize agent: {str(e)}")
-        return None, "none"
-
-# Initialize agent if not already done
-if st.session_state.agent is None:
-    with st.spinner("🔄 Initialisation de l'agent budget..."):
-        agent, agent_type = initialize_agent()
-        st.session_state.agent = agent
-        st.session_state.agent_type = agent_type
-
-# Sidebar
-with st.sidebar:
-    st.markdown("### 📊 Tableau de Bord")
+# Main application
+def main():
+    agent = st.session_state.agent
     
-    # Agent status
-    if st.session_state.agent_type == "langchain":
-        st.success("🤖 **Agent LangChain** - IA Avancée")
-    elif st.session_state.agent_type == "simple":
-        st.info("🤖 **Agent Simple** - Analyse rapide")
-    else:
-        st.error("❌ **Agent non disponible**")
-    
-    st.divider()
-    
-    # Statistics
-    st.subheader("📈 Statistiques")
-    if st.session_state.messages:
-        user_messages = len([m for m in st.session_state.messages if m["role"] == "user"])
-        st.metric("Messages utilisateur", user_messages)
-        st.metric("Réponses agent", len(st.session_state.messages) - user_messages)
-    
-    st.divider()
-    
-    # Enhanced conversation memory display
-    st.subheader("🧠 Mémoire de Conversation")
-    if hasattr(st.session_state.agent, 'conversation_memory') and st.session_state.agent:
-        memory = st.session_state.agent.conversation_memory
-        if memory['last_budget']:
-            st.metric("Budget mémorisé", f"{memory['last_budget']:,} DT")
-        if memory['last_city']:
-            st.metric("Ville mémorisée", memory['last_city'])
-        st.metric("Interactions", memory['interaction_count'])
-    
-    st.divider()
-    
-    # Clear conversation
-    if st.button("🗑️ Nouvelle Conversation", use_container_width=True):
-        st.session_state.messages = []
-        st.session_state.conversation_context = []
-        # Reset agent memory
-        if hasattr(st.session_state.agent, 'conversation_memory'):
-            st.session_state.agent.conversation_memory = {
-                'user_profile': {},
-                'search_history': [],
-                'preferences': {},
-                'last_budget': None,
-                'last_city': None,
-                'interaction_count': 0
-            }
-        st.rerun()
-
-# Enhanced Property card renderer
-def render_property_card(prop: Dict, index: int):
-    """Render an enhanced property card with full details"""
-    price_per_m2 = prop['Price'] / prop['Surface'] if prop['Surface'] > 0 else 0
-    
-    # Property type icon
-    type_icons = {
-        'Terrain': '🏗️',
-        'Villa': '🏡',
-        'Appartement': '🏢',
-        'Maison': '🏠'
-    }
-    
-    icon = type_icons.get(prop['Type'], '🏘️')
-    
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); 
-                border-radius: 15px; padding: 20px; margin: 15px 0; 
-                border-left: 5px solid #007bff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h4 style="margin: 0; color: #2c3e50;">{icon} {prop['Title']}</h4>
-            <span style="background: #007bff; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.9em;">
-                #{index}
-            </span>
-        </div>
-        
-        <div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 10px;">
-                <div style="text-align: center;">
-                    <strong style="color: #28a745;">💰 {prop['Price']:,} DT</strong>
-                </div>
-                <div style="text-align: center;">
-                    <strong style="color: #17a2b8;">📐 {prop['Surface']} m²</strong>
-                </div>
-                <div style="text-align: center;">
-                    <strong style="color: #fd7e14;">📊 {price_per_m2:,.0f} DT/m²</strong>
-                </div>
-            </div>
-        </div>
-        
-        <div style="margin: 10px 0;">
-            <p style="margin: 5px 0;"><strong>📍 Localisation:</strong> {prop['Location']}</p>
-            <p style="margin: 5px 0; font-style: italic; color: #666;">{prop.get('Description', 'Belle propriété à découvrir')}</p>
-        </div>
-        
-        {f'''<div style="margin: 10px 0;">
-            <p style="margin: 5px 0;"><strong>✨ Caractéristiques:</strong></p>
-            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                {' '.join([f'<span style="background: #e7f3ff; color: #0066cc; padding: 3px 8px; border-radius: 12px; font-size: 0.85em;">{feature}</span>' for feature in prop.get('Features', [])])}
-            </div>
-        </div>''' if prop.get('Features') else ''}
-        
-        {f'''<div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 10px; margin: 10px 0;">
-            <strong>🎯 Pourquoi cette propriété ?</strong><br>
-            <span style="color: #856404;">{prop.get('recommendation_reason', 'Excellente opportunité')}</span>
-        </div>''' if prop.get('recommendation_reason') else ''}
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #dee2e6;">
-            <div style="font-size: 0.9em; color: #666;">
-                � Publié le {prop.get('Posted_Date', 'récemment')}
-            </div>
-            <div style="display: flex; gap: 10px;">
-                {f'<span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em;">📞 {prop.get("Contact", "Contact disponible")}</span>' if prop.get('Contact') else ''}
-                <a href="{prop.get('URL', '#')}" target="_blank" 
-                   style="background: #007bff; color: white; padding: 8px 15px; border-radius: 20px; 
-                          text-decoration: none; font-weight: bold; font-size: 0.9em;">
-                    🔗 Voir l'annonce
-                </a>
-            </div>
-        </div>
+    # Header
+    st.markdown("""
+    <div class="main-header">
+        <h1>🏗️ Agent Budget Immobilier</h1>
+        <p>Trouvez la propriété parfaite en Tunisie avec notre assistant intelligent</p>
     </div>
     """, unsafe_allow_html=True)
-
-# Initialize conversation
-if not st.session_state.messages:
-    st.session_state.messages = [{
-        "role": "assistant",
-        "content": "👋 Bonjour ! Je suis votre assistant immobilier. Je peux vous aider à analyser votre budget et rechercher des propriétés. Comment puis-je vous aider aujourd'hui ?",
-        "timestamp": datetime.now().isoformat()
-    }]
-
-# Display conversation
-st.markdown("### 💬 Conversation")
-
-for message in st.session_state.messages:
-    if message["role"] == "user":
-        st.markdown(f"""
-        <div style="display: flex; justify-content: flex-end; margin: 10px 0;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; padding: 10px 15px; border-radius: 18px 18px 5px 18px; 
-                        max-width: 70%; margin-left: 30%;">
-                <strong>Vous:</strong><br>{message['content']}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div style="display: flex; justify-content: flex-start; margin: 10px 0;">
-            <div style="background: #f0f2f6; color: #262730; padding: 10px 15px; 
-                        border-radius: 18px 18px 18px 5px; max-width: 70%; margin-right: 30%;">
-                <strong>🤖 Assistant:</strong><br>{message['content']}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Display properties if available with enhanced info
-        if message.get('properties'):
-            st.markdown("### 🏠 Propriétés Recommandées")
-            
-            # Add summary statistics
-            if len(message['properties']) > 0:
-                avg_price = sum(p['Price'] for p in message['properties']) / len(message['properties'])
-                min_price = min(p['Price'] for p in message['properties'])
-                max_price = max(p['Price'] for p in message['properties'])
-                
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.metric("🔍 Trouvées", len(message['properties']))
-                with col2:
-                    st.metric("💰 Prix moyen", f"{avg_price:,.0f} DT")
-                with col3:
-                    st.metric("📉 Min", f"{min_price:,.0f} DT")
-                with col4:
-                    st.metric("📈 Max", f"{max_price:,.0f} DT")
-                
-                st.markdown("---")
-            
-            for i, prop in enumerate(message['properties'], 1):
-                render_property_card(prop, i)
-                
-            if len(message['properties']) >= 8:
-                st.info("💡 Affichage des 8 meilleures correspondances. Affinez vos critères pour plus de précision.")
-        
-        # Display suggestions if available
-        if message.get('suggestions'):
-            st.markdown("### 💡 Suggestions")
-            cols = st.columns(min(len(message['suggestions']), 4))
-            for i, suggestion in enumerate(message['suggestions'][:4]):
-                with cols[i]:
-                    if st.button(f"💭 {suggestion}", key=f"suggestion_{message['timestamp']}_{i}", use_container_width=True):
-                        # Add suggestion as user message
-                        st.session_state.messages.append({
-                            "role": "user",
-                            "content": suggestion,
-                            "timestamp": datetime.now().isoformat()
-                        })
-                        st.rerun()
-
-# Enhanced Chat input processing
-def process_user_message(user_input: str):
-    """Enhanced message processing with memory and property search"""
-    try:
-        if st.session_state.agent_type == "langchain":
-            # Use LangChain agent
-            try:
-                if hasattr(st.session_state.agent, 'invoke'):
-                    result = st.session_state.agent.invoke({"input": user_input})
-                    response = result.get("output", "Désolé, je n'ai pas pu traiter votre demande.")
-                else:
-                    response = st.session_state.agent.run(user_input)
-                
-                return {
-                    'response': response,
-                    'properties': [],
-                    'suggestions': ["Préciser votre budget", "Indiquer la ville", "Type de propriété"],
-                    'context_info': {}
-                }
-            except Exception as e:
-                return {
-                    'response': f"❌ Erreur avec l'agent LangChain: {str(e)}",
-                    'properties': [],
-                    'suggestions': [],
-                    'context_info': {}
-                }
-        
-        else:
-            # Enhanced simple agent processing
-            result = st.session_state.agent.process_message(user_input)
-            
-            response = result['agent_response']
-            properties = []
-            
-            # Get budget and search info
-            budget_info = result.get('budget_analysis', {})
-            should_search = result.get('should_search', False)
-            
-            # Always search for properties when budget is detected (default behavior)
-            if budget_info.get('extracted_budget'):
-                client_profile = {
-                    'budget': budget_info['extracted_budget'],
-                    'city': budget_info.get('city'),
-                    'property_type': budget_info.get('property_type', 'terrain')
-                }
-                
-                # Enhanced property search
-                properties = st.session_state.agent.search_properties(
-                    budget=client_profile['budget'],
-                    city=client_profile['city'],
-                    property_type=client_profile['property_type'],
-                    max_results=8
-                )
-                
-                if properties:
-                    # Always format property details first (default behavior)
-                    property_summary = "\n\n� **PROPRIÉTÉS RECOMMANDÉES:**\n"
-                    for i, prop in enumerate(properties[:3], 1):  # Show top 3 in summary
-                        property_summary += f"\n**#{i} - {prop['Title']}**\n"
-                        property_summary += f"📍 {prop['Location']}\n"
-                        property_summary += f"💰 {prop['Price']:,} DT\n"
-                        property_summary += f"🔗 {prop['URL']}\n"
-                    
-                    if len(properties) > 3:
-                        property_summary += f"\n... et {len(properties) - 3} autres propriétés disponibles\n"
-                    
-                    response = property_summary + "\n" + response
-                    response += f"\n\n🎯 **Total trouvé:** {len(properties)} propriétés adaptées à vos critères"
-                else:
-                    response += "\n\n😔 **Aucune propriété trouvée avec ces critères exacts.**"
-                    response += "\n💭 **Suggestions:** Élargir le budget de ±20% ou changer de ville ?"
-            
-            return {
-                'response': response,
-                'properties': properties,
-                'suggestions': result.get('suggestions', []),
-                'context_info': {
-                    'budget': budget_info.get('extracted_budget'),
-                    'city': budget_info.get('city'),
-                    'confidence': budget_info.get('confidence', 0),
-                    'search_performed': bool(properties)
-                }
-            }
     
-    except Exception as e:
-        return {
-            'response': f"❌ Erreur lors du traitement: {str(e)}",
-            'properties': [],
-            'suggestions': [],
-            'context_info': {}
-        }
-
-# Input area
-st.markdown("---")
-col1, col2 = st.columns([6, 1])
-
-with col1:
+    # Sidebar (minimal content)
+    with st.sidebar:
+        st.header("🤖 Agent Info")
+        st.write("Agent Budget Immobilier actif")
+        st.write(f"Interactions: {agent.conversation_memory['interaction_count']}")
+        if agent.conversation_memory['last_budget']:
+            st.write(f"Dernier budget: {agent.conversation_memory['last_budget']:,} DT")
+        if agent.conversation_memory['last_city']:
+            st.write(f"Dernière ville: {agent.conversation_memory['last_city']}")
+    
+    # Main content
+    st.header("💬 Conversation")
+    
+    # Chat input
     user_input = st.text_input(
-        "Tapez votre message...",
-        placeholder="Ex: J'ai un budget de 300000 DT pour un terrain à Sousse",
-        key="chat_input"
+        "Posez votre question ou décrivez ce que vous cherchez",
+        placeholder="Ex: Je cherche un terrain à Tunis avec un budget de 300000 DT"
     )
-
-with col2:
-    send_button = st.button("📤", help="Envoyer", use_container_width=True)
-
-# Enhanced Handle message sending with context and suggestions
-if send_button and user_input.strip():
-    # Add user message
-    st.session_state.messages.append({
-        "role": "user",
-        "content": user_input,
-        "timestamp": datetime.now().isoformat()
-    })
     
-    # Process with enhanced agent
-    with st.spinner("🤖 L'assistant analyse votre demande..."):
-        result = process_user_message(user_input)
+    if user_input:
+        # Process user message
+        response = agent.process_message(user_input)
+        st.session_state.chat_history.append({
+            'role': 'user',
+            'message': user_input
+        })
+        st.session_state.chat_history.append({
+            'role': 'agent',
+            'message': response['agent_response']
+        })
         
-        # Add assistant response with enhanced data
-        assistant_message = {
-            "role": "assistant",
-            "content": result['response'],
-            "timestamp": datetime.now().isoformat(),
-            "context_info": result.get('context_info', {})
-        }
+        # Update session state with latest response
+        st.session_state.last_response = response
         
-        if result['properties']:
-            assistant_message['properties'] = result['properties']
+        # Clear input
+        st.session_state.user_input = ""
+    
+    # Display chat history
+    for chat in st.session_state.chat_history:
+        if chat['role'] == 'user':
+            st.markdown(f'<div class="chat-message chat-user">👤 <strong>Vous:</strong> {chat["message"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="chat-message chat-agent">🤖 <strong>Agent:</strong> {chat["message"]}</div>', unsafe_allow_html=True)
+    
+    # Results and Suggestions section - moved under conversation
+    st.header("🏡 Résultats & Suggestions")
         
-        if result.get('suggestions'):
-            assistant_message['suggestions'] = result['suggestions']
+   
+    # Display suggestions
+    if 'last_response' in st.session_state and st.session_state.last_response.get('suggestions'):
+        st.subheader("Suggestions")
+        for suggestion in st.session_state.last_response['suggestions']:
+            if st.button(suggestion, key=f"suggestion_{suggestion}"):
+                st.session_state.selected_suggestion = suggestion
+                # Process suggestion as new input
+                response = agent.process_message(suggestion)
+                st.session_state.chat_history.append({
+                    'role': 'user',
+                    'message': suggestion
+                })
+                st.session_state.chat_history.append({
+                    'role': 'agent',
+                    'message': response['agent_response']
+                })
+                st.session_state.last_response = response
+    
+    # Display properties if search was triggered
+    if 'last_response' in st.session_state and st.session_state.last_response.get('should_search'):
+        budget = st.session_state.last_response['budget_analysis'].get('extracted_budget')
+        city = st.session_state.last_response['budget_analysis'].get('city')
+        prop_type = st.session_state.last_response['budget_analysis'].get('property_type')
         
-        st.session_state.messages.append(assistant_message)
+        properties = agent.search_properties(budget, city, prop_type)
+        
+        if properties:
+            st.subheader("Propriétés Correspondantes")
+            for prop in properties[:6]:  # Show up to 6 properties
+                with st.expander(f"{prop['Title']} - {prop['Price']:,} DT"):
+                    st.markdown(f"""
+                    <div class="property-card">
+                        <img src="{prop['Image_URL']}" style="width:100%; border-radius:10px; margin-bottom:1rem;">
+                        <p><strong>🏠 Type:</strong> {prop['Type']}</p>
+                        <p><strong>📍 Lieu:</strong> {prop['Location']}</p>
+                        <p><strong>📏 Surface:</strong> {prop['Surface']} m²</p>
+                        <p><strong>💰 Prix:</strong> {prop['Price']:,} DT</p>
+                        <p><strong>📝 Description:</strong> {prop['Description']}</p>
+                        <p><strong>✨ Caractéristiques:</strong> {', '.join(prop['Features'])}</p>
+                        <p><strong>📅 Publié:</strong> {prop['Posted_Date']}</p>
+                        <p><strong>⭐ Qualité:</strong> {'★' * prop['Quality_Score']}</p>
+                        <p><strong>🔍 Raison:</strong> {prop['recommendation_reason']}</p>
+                        <p><strong>📞 Contact:</strong> {prop['Contact']}</p>
+                        <p><a href="{prop['URL']}" target="_blank">Voir l'annonce</a></p>
+                    </div>
+                    """, unsafe_allow_html=True)
+        else:
+            st.warning("Aucune propriété trouvée correspondant à vos critères.")
     
-    # Clear input and refresh
-    st.rerun()
+    # Display market analysis if available
+    if 'last_response' in st.session_state and st.session_state.last_response.get('should_search'):
+        analysis = agent.analyze_client_budget({
+            'budget': budget,
+            'city': city
+        })
+        
+        st.subheader("📊 Analyse du Marché")
+        st.write(f"Nombre de propriétés trouvées: {analysis['market_statistics']['inventory_count']}")
+        if analysis['market_statistics']['inventory_count'] > 0:
+            st.write(f"Prix moyen: {int(analysis['market_statistics']['price_stats']['mean']):,} DT")
+            st.write(f"Surface moyenne: {int(analysis['market_statistics']['surface_stats']['mean'])} m²")
+            feasibility = analysis['market_statistics']['budget_feasibility']['feasibility_ratio']
+            st.write(f"Ratio de faisabilité: {feasibility:.1%}")
+            
+            # Optional Plotly chart
+            if PLOTLY_AVAILABLE and analysis['market_statistics']['inventory_count'] > 0:
+                prices = [p['Price'] for p in analysis['comparable_properties']]
+                fig = px.histogram(
+                    x=prices,
+                    nbins=20,
+                    title="Distribution des Prix",
+                    labels={'x': 'Prix (DT)', 'y': 'Nombre de propriétés'},
+                    template='plotly_white'
+                )
+                fig.update_layout(showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
 
-# Enhanced footer with conversation context
-conversation_context = ""
-if hasattr(st.session_state.agent, 'conversation_memory') and st.session_state.agent:
-    memory = st.session_state.agent.conversation_memory
-    if memory['last_budget'] or memory['last_city']:
-        context_parts = []
-        if memory['last_budget']:
-            context_parts.append(f"Budget: {memory['last_budget']:,} DT")
-        if memory['last_city']:
-            context_parts.append(f"Ville: {memory['last_city']}")
-        conversation_context = f" | Contexte: {' • '.join(context_parts)}"
-
-st.markdown("---")
-st.markdown(f"""
-<div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
-    <p>🏗️ <strong>Agent Budget Immobilier</strong> - Session: {st.session_state.conversation_id[-8:]}{conversation_context}</p>
-    <p style="font-size: 0.9em; color: #666;">Votre assistant intelligent pour des projets immobiliers réussis</p>
-</div>
-""", unsafe_allow_html=True)
-
-# Enhanced Help section
-with st.expander("💡 Guide d'Utilisation Avancée"):
-    st.markdown("""
-    #### Comment utiliser l'assistant:
-    
-    **💰 Pour l'analyse budgétaire:**
-    - Mentionnez votre budget: "J'ai 250000 DT" ou "250 mille dinars"
-    - Précisez la ville: "pour un terrain à Sousse"
-    - L'assistant mémorise vos préférences pour la suite
-    
-    **🔍 Pour la recherche de propriétés:**
-    - Utilisez des mots comme "cherche", "trouve", "recommande", "montre"
-    - Spécifiez le type: "villa", "appartement", "terrain", "maison"
-    - L'assistant propose les meilleures correspondances avec URLs réelles
-    
-    **🧠 Mémoire conversationnelle:**
-    - L'assistant se souvient de votre budget et ville préférée
-    - Continuez la conversation naturellement
-    - Changez vos critères à tout moment
-    
-    **📊 Fonctionnalités avancées:**
-    - Analyse de budget intelligente avec recommandations personnalisées
-    - Recherche de propriétés avec tri par pertinence  
-    - Statistiques du marché en temps réel
-    - URLs vers les annonces réelles
-    - Descriptions détaillées et caractéristiques
-    - Conseils d'investissement contextuels
-    
-    **💡 Exemples d'utilisation:**
-    - "J'ai 300000 DT pour une villa à Tunis"
-    - "Montre-moi des terrains à Sousse"
-    - "Cherche des appartements avec mon budget"
-    - "Recommande des propriétés dans ma gamme de prix"
-    """)
+if __name__ == "__main__":
+    main()
