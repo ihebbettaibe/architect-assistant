@@ -30,7 +30,7 @@ class SimpleBudgetAgent:
         ]
         # Conversation memory and context
         self.conversation_memory = {
-            'user_profile': {'name': 'Ranim'},
+            'user_profile': {'name': 'Vous'},
             'search_history': [],
             'preferences': {},
             'last_budget': None,
