@@ -44,112 +44,62 @@ except ImportError:
 
 # Enhanced Budget Agent Implementation with Memory
 class SimpleBudgetAgent:
+
     def __init__(self):
         self.tunisia_cities = [
             'tunis', 'sfax', 'sousse', 'kairouan', 'bizerte', 'mahdia', 
             'monastir', 'nabeul', 'ariana', 'ben arous', 'gafsa', 'medenine',
             'jendouba', 'tataouine', 'tozeur', 'siliana', 'kasserine'
         ]
-        
         # Conversation memory and context
         self.conversation_memory = {
-            'user_profile': {},
+            'user_profile': {'name': 'Ranim'},
             'search_history': [],
             'preferences': {},
             'last_budget': None,
             'last_city': None,
             'interaction_count': 0
         }
-        
-        # Enhanced property data with real-looking URLs
-        self.sample_properties = self._generate_enhanced_properties()
-    
-    def _generate_enhanced_properties(self) -> List[Dict]:
-        """Generate enhanced property data with realistic details and URLs"""
-        properties = []
-        cities = ['Tunis', 'Sfax', 'Sousse', 'Monastir', 'Nabeul', 'Bizerte', 'Mahdia']
-        property_types = ['Terrain', 'Villa', 'Appartement', 'Maison']
-        
-        # Real estate websites for Tunisia
-        websites = [
-            'tayara.tn', 'jumia.com.tn', 'afariat.com', 'immobilier.tn',
-            'mubawab.tn', 'tecnocasa.tn', 'sarouty.tn'
-        ]
-        
-        neighborhoods = {
-            'Tunis': ['La Marsa', 'Carthage', 'Sidi Bou Said', 'Ariana', 'Manouba'],
-            'Sfax': ['Centre Ville', 'Sakiet Ezzit', 'Route Tunis', 'Sfax Sud'],
-            'Sousse': ['Centre Ville', 'Port El Kantaoui', 'Hammam Sousse', 'Sahloul'],
-            'Monastir': ['Centre Ville', 'Skanes', 'Ksar Hellal', 'Jemmal'],
-            'Nabeul': ['Centre Ville', 'Hammamet', 'Kelibia', 'Korba'],
-            'Bizerte': ['Centre Ville', 'Zarzouna', 'Ras Jebel', 'Mateur'],
-            'Mahdia': ['Centre Ville', 'Hiboun', 'Ksour Essef', 'Chorbane']
-        }
-        
-        for i in range(150):  # Increased to 150 properties
-            city = np.random.choice(cities)
-            neighborhood = np.random.choice(neighborhoods.get(city, ['Centre Ville']))
-            prop_type = np.random.choice(property_types)
-            website = np.random.choice(websites)
-            
-            # More realistic price ranges based on city and type
-            base_prices = {
-                'Tunis': {'Terrain': (120000, 800000), 'Villa': (300000, 1200000), 
-                         'Appartement': (80000, 500000), 'Maison': (150000, 700000)},
-                'Sfax': {'Terrain': (80000, 400000), 'Villa': (200000, 800000), 
-                        'Appartement': (60000, 350000), 'Maison': (100000, 450000)},
-                'Sousse': {'Terrain': (100000, 600000), 'Villa': (250000, 900000), 
-                          'Appartement': (70000, 400000), 'Maison': (120000, 550000)},
-                'Monastir': {'Terrain': (90000, 500000), 'Villa': (220000, 750000), 
-                            'Appartement': (65000, 380000), 'Maison': (110000, 500000)},
-                'Nabeul': {'Terrain': (70000, 350000), 'Villa': (180000, 600000), 
-                          'Appartement': (50000, 280000), 'Maison': (90000, 400000)},
-                'Bizerte': {'Terrain': (60000, 300000), 'Villa': (150000, 500000), 
-                           'Appartement': (40000, 250000), 'Maison': (80000, 350000)},
-                'Mahdia': {'Terrain': (65000, 320000), 'Villa': (160000, 520000), 
-                          'Appartement': (45000, 260000), 'Maison': (85000, 370000)}
-            }
-            
-            price_range = base_prices.get(city, base_prices['Sousse'])[prop_type]
-            price = np.random.randint(price_range[0], price_range[1])
-            
-            # Surface based on property type
-            surface_ranges = {
-                'Terrain': (200, 2000),
-                'Villa': (150, 800),
-                'Appartement': (60, 250),
-                'Maison': (100, 500)
-            }
-            
-            surface = np.random.randint(*surface_ranges[prop_type])
-            
-            # Generate realistic property ID
-            prop_id = f"{city[:3].upper()}{prop_type[:2].upper()}{i+1:03d}"
-            
-            # Generate quality score based on features
-            quality_score = np.random.randint(3, 6)  # 3-5 stars
-            
-            properties.append({
-                'ID': prop_id,
-                'Title': f'{prop_type} {surface}m² à {neighborhood}, {city}',
-                'Price': price,
-                'Surface': surface,
-                'Location': f'{neighborhood}, {city}, Tunisie',
-                'URL': f'https://www.{website}/annonces/{prop_id.lower()}-{prop_type.lower()}-{city.lower()}',
-                'Type': prop_type,
-                'City': city,
-                'Neighborhood': neighborhood,
-                'Description': self._generate_property_description(prop_type, surface, neighborhood, city),
-                'Features': self._generate_property_features(prop_type),
-                'Contact': f'+216 {np.random.randint(20000000, 99999999)}',
-                'Posted_Date': (datetime.now() - pd.Timedelta(days=np.random.randint(1, 90))).strftime('%Y-%m-%d'),
-                'Quality_Score': quality_score,
-                'Agent_Name': f'{np.random.choice(["Ahmed", "Fatma", "Mohamed", "Salma", "Karim", "Amina"])} {np.random.choice(["Ben Ali", "Trabelsi", "Sassi", "Khedira", "Bouazizi"])}',
-                'Views': np.random.randint(50, 500),
-                'Image_URL': f'https://images.unsplash.com/photo-{np.random.randint(1500000000, 1600000000)}-{np.random.randint(100000, 999999)}?w=400&h=300&fit=crop'
-            })
-        
-        return properties
+        # Load all CSVs from cleaned_data/
+        self.sample_properties = self._load_properties_from_csv()
+
+    def _load_properties_from_csv(self) -> List[Dict]:
+        """Load all property data from cleaned_data/*.csv files"""
+        import glob
+        all_properties = []
+        csv_dir = os.path.join(os.path.dirname(__file__), '../../cleaned_data')
+        csv_files = glob.glob(os.path.join(csv_dir, 'cleaned_*_properties.csv'))
+        for csv_path in csv_files:
+            try:
+                df = pd.read_csv(csv_path)
+                # Standardize columns for downstream code
+                for _, row in df.iterrows():
+                    prop = {
+                        'ID': row.get('ID') or row.get('id') or '',
+                        'Title': row.get('Title') or row.get('title') or row.get('Titre') or '',
+                        'Price': int(row.get('Price') or row.get('Prix') or row.get('price') or 0),
+                        'Surface': int(row.get('Surface') or row.get('surface') or 0),
+                        'Location': row.get('Location') or row.get('location') or '',
+                        'URL': row.get('URL') or row.get('url') or '',
+                        'Type': row.get('Type') or row.get('type') or '',
+                        'City': row.get('City') or row.get('city') or '',
+                        'Neighborhood': row.get('Neighborhood') or row.get('neighborhood') or '',
+                        'Description': row.get('Description') or row.get('description') or '',
+                        'Features': row.get('Features') or row.get('features') or [],
+                        'Contact': row.get('Contact') or row.get('contact') or '',
+                        'Posted_Date': row.get('Posted_Date') or row.get('posted_date') or '',
+                        'Quality_Score': int(row.get('Quality_Score') or row.get('quality_score') or 3),
+                        'Agent_Name': row.get('Agent_Name') or row.get('agent_name') or '',
+                        'Views': int(row.get('Views') or row.get('views') or 0),
+                        'Image_URL': row.get('Image_URL') or row.get('image_url') or '',
+                    }
+                    # If Features is a string, try to split it
+                    if isinstance(prop['Features'], str):
+                        prop['Features'] = [f.strip() for f in prop['Features'].split(',') if f.strip()]
+                    all_properties.append(prop)
+            except Exception as e:
+                print(f"⚠️ Failed to load {csv_path}: {e}")
+        return all_properties
     
     def _generate_property_description(self, prop_type: str, surface: int, neighborhood: str, city: str) -> str:
         """Generate realistic property descriptions"""
@@ -370,24 +320,22 @@ class SimpleBudgetAgent:
             # Filter by budget (±30% tolerance for more results)
             if budget * 0.7 <= prop['Price'] <= budget * 1.3:
                 # Filter by city if specified
-                if city is None or prop['City'].lower() == city.lower():
+                city_val = str(prop.get('City', '') or '')
+                type_val = str(prop.get('Type', '') or '')
+                if city is None or (isinstance(city_val, str) and city_val.lower() == city.lower()):
                     # Filter by property type if specified
-                    if property_type is None or prop['Type'].lower() == property_type.lower():
+                    if property_type is None or (isinstance(type_val, str) and type_val.lower() == property_type.lower()):
                         # Calculate match score
                         price_diff = abs(prop['Price'] - budget) / budget
                         match_score = 1 - price_diff
-                        
                         # Bonus for exact city match
-                        if city and prop['City'].lower() == city.lower():
+                        if city and isinstance(city_val, str) and city_val.lower() == city.lower():
                             match_score += 0.2
-                        
                         # Bonus for exact property type match
-                        if property_type and prop['Type'].lower() == property_type.lower():
+                        if property_type and isinstance(type_val, str) and type_val.lower() == property_type.lower():
                             match_score += 0.1
-                        
                         # Bonus for quality score
                         match_score += (prop['Quality_Score'] - 3) * 0.05
-                        
                         prop['match_score'] = match_score
                         prop['recommendation_reason'] = self._get_recommendation_reason(prop, budget, city)
                         filtered_properties.append(prop)
@@ -426,10 +374,18 @@ class SimpleBudgetAgent:
             reasons.append("📍 Dans votre ville préférée")
         
         # Recent posting
-        posted_date = datetime.strptime(prop['Posted_Date'], '%Y-%m-%d')
-        days_ago = (datetime.now() - posted_date).days
-        if days_ago <= 7:
-            reasons.append("🆕 Annonce récente")
+        posted_date_str = prop.get('Posted_Date', '')
+        # Only try to parse if it's a non-empty, non-NaN string
+        if posted_date_str and isinstance(posted_date_str, str):
+            try:
+                # Some CSVs may have NaN as float, skip those
+                if posted_date_str.lower() != 'nan':
+                    posted_date = datetime.strptime(posted_date_str, '%Y-%m-%d')
+                    days_ago = (datetime.now() - posted_date).days
+                    if days_ago <= 7:
+                        reasons.append("🆕 Annonce récente")
+            except Exception:
+                pass
         
         return ' • '.join(reasons[:3])  # Max 3 reasons
     
@@ -621,14 +577,14 @@ st.markdown("""
     }
     
     .chat-user {
-        background: linear-gradient(135deg, #667eea         0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        color: #232946;
         border-left: 5px solid #764ba2;
     }
-    
+
     .chat-agent {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        color: #333;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+        color: #232946;
         border-left: 5px solid #667eea;
     }
     
@@ -638,17 +594,172 @@ st.markdown("""
     }
     
     .property-card {
-        background: #fefae0;
-        padding: 1.5rem;
-        border-radius: 15px;
-        margin: 1rem 0;
-        transition: transform 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+        padding: 0;
+        border-radius: 20px;
+        margin: 1.5rem 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.10);
+        border: 1px solid #c7d2fe;
+        overflow: hidden;
     }
     
     .property-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .property-header {
+        background: linear-gradient(135deg, #667eea 0%, #a5b4fc 100%);
+        color: #232946;
+        padding: 1.5rem;
+        margin-bottom: 0;
+    }
+    
+    .property-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .property-price {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #ffd700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .property-content {
+        padding: 1.5rem;
+        background: #e0e7ff;
+        color: #232946;
+    }
+    
+    .property-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .property-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .property-info-item {
+        background: #c7d2fe;
+        padding: 0.8rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        color: #232946;
+    }
+    
+    .property-info-label {
+        font-size: 0.85rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    
+    .property-info-value {
+        font-size: 1rem;
+        color: #232946;
+        font-weight: 700;
+    }
+    
+    .property-description {
+        background: #c7d2fe;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #10b981;
+        margin: 1rem 0;
+        font-style: italic;
+        color: #232946;
+        line-height: 1.6;
+    }
+    
+    .property-features {
+        margin: 1rem 0;
+    }
+    
+    .feature-tag {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin: 0.2rem;
+        font-weight: 600;
+    }
+    
+    .property-reasons {
+        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid #10b981;
+        margin: 1rem 0;
+        color: #232946;
+    }
+    
+    .reasons-title {
+        color: #047857;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .reason-item {
+        color: #065f46;
+        font-size: 0.85rem;
+        margin: 0.2rem 0;
+        line-height: 1.4;
+    }
+    
+    .property-footer {
+        background: #c7d2fe;
+        padding: 1rem 1.5rem;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #a5b4fc;
+        color: #232946;
+    }
+    
+    .contact-info {
+        color: #475569;
+        font-weight: 600;
+    }
+    
+    .view-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .view-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        text-decoration: none;
+        color: white !important;
+    }
+    
+    .quality-stars {
+        color: #fbbf24;
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
     }
     
     .suggestion-chip {
@@ -707,6 +818,7 @@ def main():
     with st.sidebar:
         st.header("🤖 Agent Info")
         st.write("Agent Budget Immobilier actif")
+        st.write(f"Utilisateur: {agent.conversation_memory['user_profile'].get('name', 'Mme Ranim')}")
         st.write(f"Interactions: {agent.conversation_memory['interaction_count']}")
         if agent.conversation_memory['last_budget']:
             st.write(f"Dernier budget: {agent.conversation_memory['last_budget']:,} DT")
@@ -741,9 +853,10 @@ def main():
         st.session_state.user_input = ""
     
     # Display chat history
+    user_name = st.session_state.agent.conversation_memory['user_profile'].get('name', 'Vous')
     for chat in st.session_state.chat_history:
         if chat['role'] == 'user':
-            st.markdown(f'<div class="chat-message chat-user">👤 <strong>Vous:</strong> {chat["message"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="chat-message chat-user">👤 <strong>{user_name}:</strong> {chat["message"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-message chat-agent">🤖 <strong>Agent:</strong> {chat["message"]}</div>', unsafe_allow_html=True)
     
@@ -779,24 +892,64 @@ def main():
         
         if properties:
             st.subheader("Propriétés Correspondantes")
-            for prop in properties[:6]:  # Show up to 6 properties
-                with st.expander(f"{prop['Title']} - {prop['Price']:,} DT"):
-                    st.markdown(f"""
-                    <div class="property-card">
-                        <img src="{prop['Image_URL']}" style="width:100%; border-radius:10px; margin-bottom:1rem;">
-                        <p><strong>🏠 Type:</strong> {prop['Type']}</p>
-                        <p><strong>📍 Lieu:</strong> {prop['Location']}</p>
-                        <p><strong>📏 Surface:</strong> {prop['Surface']} m²</p>
-                        <p><strong>💰 Prix:</strong> {prop['Price']:,} DT</p>
-                        <p><strong>📝 Description:</strong> {prop['Description']}</p>
-                        <p><strong>✨ Caractéristiques:</strong> {', '.join(prop['Features'])}</p>
-                        <p><strong>📅 Publié:</strong> {prop['Posted_Date']}</p>
-                        <p><strong>⭐ Qualité:</strong> {'★' * prop['Quality_Score']}</p>
-                        <p><strong>🔍 Raison:</strong> {prop['recommendation_reason']}</p>
-                        <p><strong>📞 Contact:</strong> {prop['Contact']}</p>
-                        <p><a href="{prop['URL']}" target="_blank">Voir l'annonce</a></p>
+            for i, prop in enumerate(properties[:6]):  # Show up to 6 properties
+                card_html = f'''
+                <div class="property-card">
+                    <div class="property-header">
+                        <div class="property-title">{prop['Title']}</div>
+                        <div class="property-price">{prop['Price']:,} DT</div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="property-content">
+                        <img src="{prop['Image_URL']}" class="property-image" alt="Photo de la propriété">
+                        <div class="property-info-grid">
+                            <div class="property-info-item">
+                                <div class="property-info-label">Type</div>
+                                <div class="property-info-value">🏠 {prop['Type']}</div>
+                            </div>
+                            <div class="property-info-item">
+                                <div class="property-info-label">Surface</div>
+                                <div class="property-info-value">📏 {prop['Surface']} m²</div>
+                            </div>
+                            <div class="property-info-item">
+                                <div class="property-info-label">Localisation</div>
+                                <div class="property-info-value">📍 {prop['Neighborhood']}, {prop['City']}</div>
+                            </div>
+                            <div class="property-info-item">
+                                <div class="property-info-label">Publié le</div>
+                                <div class="property-info-value">📅 {prop['Posted_Date']}</div>
+                            </div>
+                        </div>
+                        <div class="property-description">
+                            <strong>Description:</strong> {prop['Description']}
+                        </div>
+                        <div class="quality-stars">
+                            <strong>Qualité:</strong> {'★' * prop['Quality_Score']} ({prop['Quality_Score']}/5)
+                        </div>
+                        <div class="property-features">
+                            <strong style="color: #374151; margin-bottom: 0.5rem; display: block;">Caractéristiques:</strong>
+                            {''.join([f'<span class="feature-tag">{feature}</span>' for feature in prop['Features']])}
+                        </div>
+                        <div class="property-reasons">
+                            <div class="reasons-title">🎯 Pourquoi cette propriété ?</div>
+                            {'<br>'.join([f'<div class="reason-item">• {reason}</div>' for reason in prop['recommendation_reason'].split(' • ')])}
+                        </div>
+                    </div>
+                    <div class="property-footer">
+                        <div class="contact-info">
+                            📞 <strong>{prop['Contact']}</strong><br>
+                            👤 Agent: <strong>{prop['Agent_Name']}</strong><br>
+                            👁️ Vues: <strong>{prop['Views']}</strong>
+                        </div>
+                        <a href="{prop['URL']}" target="_blank" class="view-link">
+                            🔗 Voir l'annonce complète
+                        </a>
+                    </div>
+                </div>
+                '''
+                st.markdown(card_html, unsafe_allow_html=True)
+                # Add some spacing between properties
+                if i < len(properties[:6]) - 1:
+                    st.markdown("<br>", unsafe_allow_html=True)
         else:
             st.warning("Aucune propriété trouvée correspondant à vos critères.")
     
@@ -806,18 +959,43 @@ def main():
             'budget': budget,
             'city': city
         })
-        
+
         st.subheader("📊 Analyse du Marché")
         st.write(f"Nombre de propriétés trouvées: {analysis['market_statistics']['inventory_count']}")
         if analysis['market_statistics']['inventory_count'] > 0:
-            st.write(f"Prix moyen: {int(analysis['market_statistics']['price_stats']['mean']):,} DT")
-            st.write(f"Surface moyenne: {int(analysis['market_statistics']['surface_stats']['mean'])} m²")
-            feasibility = analysis['market_statistics']['budget_feasibility']['feasibility_ratio']
-            st.write(f"Ratio de faisabilité: {feasibility:.1%}")
-            
-            # Optional Plotly chart
-            if PLOTLY_AVAILABLE and analysis['market_statistics']['inventory_count'] > 0:
-                prices = [p['Price'] for p in analysis['comparable_properties']]
+            # Enhanced: handle None and add better formatting
+            price_mean = analysis['market_statistics']['price_stats'].get('mean')
+            surface_mean = analysis['market_statistics']['surface_stats'].get('mean')
+            feasibility = analysis['market_statistics']['budget_feasibility'].get('feasibility_ratio')
+
+            price_mean_str = f"{int(price_mean):,} DT" if price_mean is not None else "N/A"
+            surface_mean_str = f"{int(surface_mean)} m²" if surface_mean is not None else "N/A"
+            feasibility_str = f"{feasibility:.1%}" if feasibility is not None else "N/A"
+
+            st.markdown(f"""
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-title">Prix moyen</div>
+                    <div class="stats-value">{price_mean_str}</div>
+                    <div class="stats-label">Prix moyen des propriétés trouvées</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-title">Surface moyenne</div>
+                    <div class="stats-value">{surface_mean_str}</div>
+                    <div class="stats-label">Surface moyenne des propriétés</div>
+                </div>
+            <div class="stats-card">
+                <div class="stats-title">Faisabilité</div>
+                <div class="stats-value">{feasibility_str}</div>
+                <div class="stats-label">Propriétés dans votre budget</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Optional Plotly chart
+        if PLOTLY_AVAILABLE and analysis['market_statistics']['inventory_count'] > 0:
+            prices = [p['Price'] for p in analysis['comparable_properties'] if p.get('Price') is not None]
+            if prices:
                 fig = px.histogram(
                     x=prices,
                     nbins=20,
