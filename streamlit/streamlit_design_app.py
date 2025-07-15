@@ -4,13 +4,15 @@ import os
 import json
 from datetime import datetime
 
-# Add agents directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'agents'))
+# Add the root directory to the Python path
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, root_dir)
 
 try:
     from agents.design_agent import DesignAgent
-except ImportError:
-    st.error("❌ Could not import DesignAgent. Please check the import paths.")
+except ImportError as e:
+    st.error(f"❌ Could not import DesignAgent: {str(e)}")
+    st.error("💡 Please check that the design_agent.py file exists in the agents directory")
     st.stop()
 
 # Configure Streamlit page

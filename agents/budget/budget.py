@@ -746,6 +746,8 @@ def main():
         st.session_state.next_agent = None
     if 'financial_analysis' not in st.session_state:
         st.session_state.financial_analysis = False
+    if 'last_processed_input' not in st.session_state:
+        st.session_state.last_processed_input = ""
     
     agent = st.session_state.agent
     
@@ -776,13 +778,31 @@ def main():
     # Main content
     st.header("💬 Conversation")
     
+    # Add a clear chat button
+    col1, col2 = st.columns([4, 1])
+    with col2:
+        if st.button("🗑️ Effacer", help="Effacer la conversation"):
+            st.session_state.chat_history = []
+            st.session_state.agent.conversation_memory['interaction_count'] = 0
+            st.session_state.agent.conversation_memory['search_history'] = []
+            if 'last_processed_input' in st.session_state:
+                del st.session_state.last_processed_input
+            if 'last_response' in st.session_state:
+                del st.session_state.last_response
+            st.rerun()
+    
     # Chat input
     user_input = st.text_input(
         "Posez votre question ou décrivez ce que vous cherchez",
-        placeholder="Ex: Je cherche un terrain à Tunis avec un budget de 300000 DT"
+        placeholder="Ex: Je cherche un terrain à Tunis avec un budget de 300000 DT",
+        key="user_input_field"
     )
     
-    if user_input:
+    # Only process input if it's new and not empty
+    if user_input and (
+        'last_processed_input' not in st.session_state or 
+        st.session_state.last_processed_input != user_input
+    ):
         # Process user message
         response = agent.process_message(user_input)
         st.session_state.chat_history.append({
@@ -796,9 +816,10 @@ def main():
         
         # Update session state with latest response
         st.session_state.last_response = response
+        st.session_state.last_processed_input = user_input
         
-        # Clear input
-        st.session_state.user_input = ""
+        # Clear the input field by rerunning
+        st.rerun()
     
     # Display chat history
     user_name = st.session_state.agent.conversation_memory['user_profile'].get('name', 'Vous')
@@ -929,7 +950,7 @@ def main():
                         st.session_state.selected_property = prop
                         st.session_state.show_orchestrator = True
                         st.success(f"🎯 Propriété sélectionnée: {title}")
-                        st.rerun()
+                        # Don't rerun here to avoid processing loops
                 
                 # Add some spacing between properties
                 if i < len(properties[:6]) - 1:
@@ -1004,6 +1025,12 @@ def main():
         property_type = selected_prop.get('Type', '')
         property_city = selected_prop.get('City', '')
         
+        # Clean up property_type to handle NaN or float values
+        if not isinstance(property_type, str):
+            property_type = str(property_type) if property_type is not None else ''
+        if property_type.lower() in ['nan', 'none', '']:
+            property_type = 'terrain'  # Default type
+        
         action_plan = []
         
         # Generate action plan based on property characteristics
@@ -1044,6 +1071,17 @@ def main():
                 st.session_state.next_agent = "design"
                 st.info("🔄 Redirection vers l'Agent Design...")
                 st.info("💡 **Conseil:** L'Agent Design vous aidera à planifier l'architecture et la construction.")
+                
+                # Launch the Design Agent Streamlit app
+                import subprocess
+                import sys
+                design_app_path = r"C:\Users\ASUS\Desktop\architect-assistant\streamlit\streamlit_design_app.py"
+                try:
+                    subprocess.Popen([sys.executable, "-m", "streamlit", "run", design_app_path])
+                    st.success("🚀 **Agent Design lancé!** Une nouvelle fenêtre va s'ouvrir.")
+                except Exception as e:
+                    st.error(f"❌ Erreur lors du lancement: {str(e)}")
+                    st.code(f"streamlit run {design_app_path}", language="bash")
         
         with col2:
             if st.button("📋 Agent Régulation", help="Vérifier les autorisations légales"):
@@ -1059,7 +1097,7 @@ def main():
         with col4:
             if st.button("🔄 Nouvelle Recherche", help="Recommencer la recherche"):
                 # Reset session state
-                for key in ['selected_property', 'show_orchestrator', 'next_agent', 'financial_analysis']:
+                for key in ['selected_property', 'show_orchestrator', 'next_agent', 'financial_analysis', 'last_processed_input']:
                     if key in st.session_state:
                         del st.session_state[key]
                 st.rerun()
@@ -1129,7 +1167,17 @@ def main():
                 
                 if st.button("▶️ Lancer l'Agent Design"):
                     st.info("🔄 Redirection vers l'application Agent Design...")
-                    st.code("streamlit run agents/design_agent.py", language="bash")
+                    
+                    # Launch the Design Agent Streamlit app
+                    import subprocess
+                    import sys
+                    design_app_path = r"C:\Users\ASUS\Desktop\architect-assistant\streamlit\streamlit_design_app.py"
+                    try:
+                        subprocess.Popen([sys.executable, "-m", "streamlit", "run", design_app_path])
+                        st.success("🚀 **Agent Design lancé!** Une nouvelle fenêtre va s'ouvrir.")
+                    except Exception as e:
+                        st.error(f"❌ Erreur lors du lancement: {str(e)}")
+                        st.code(f"streamlit run {design_app_path}", language="bash")
             
             elif next_agent == "regulation":
                 st.info("📋 **Prochaine étape:** Agent Régulation")
